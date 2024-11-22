@@ -1,8 +1,10 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { GeoJSON } from 'react-leaflet'
 import { MapContext } from './MapContainer'
+import DetailWeather from './DetailWeather'
 
 const GeoJSONLayer = ({ data }) => {
+  const [selectedFeature, setSelectedFeature] = useState(null)
   const { geoJsonData, displayOption } = useContext(MapContext)
   const getColorByOption = (feature) => {
     if (displayOption === 'temperature') {
@@ -33,12 +35,60 @@ const GeoJSONLayer = ({ data }) => {
   })
 
   const onEachFeature = (feature, layer) => {
-    if (feature.properties) {
-      layer.bindPopup(`<b>${feature.properties.name}</b><br/>Nhiệt độ: ${feature.properties.temperature}°C`)
-    }
+    layer.on({
+      click: () => {
+        setSelectedFeature(feature.properties)
+      }
+    })
   }
 
-  return <GeoJSON data={geoJsonData} style={style} onEachFeature={onEachFeature} />
+  return (
+    <>
+      <GeoJSON data={geoJsonData} style={style} onEachFeature={onEachFeature} />
+      <div
+        style={{
+          backgroundColor: '#f8f9fa',
+          padding: '20px',
+          borderTop: '1px solid #ddd',
+          maxHeight: '200px',
+          overflowY: 'auto'
+        }}
+      >
+        {selectedFeature ? (
+          <div
+            style={{
+              position: 'absolute', // Sidebar đè lên bản đồ
+              bottom: '0px', // Căn chỉnh từ trên xuống
+              left: '0', // Nằm sát bên trái
+              width: '1600px', // Chiều rộng của Sidebar
+              height: 'calc(100% - 500px)', // Chiều cao của Sidebar
+              backgroundColor: '#f8f9fa', // Màu nền Sidebar
+              borderRight: '1px solid #ddd', // Viền bên phải
+              zIndex: 1000, // Đảm bảo Sidebar luôn nằm trên cùng
+              overflowY: 'auto', // Cuộn nội dung nếu quá dài
+              padding: '10px' // Khoảng cách bên trong
+            }}
+          >
+            <h4>Thông tin chi tiết</h4>
+            <p>
+              <strong>Địa điểm:</strong> {selectedFeature.name}
+            </p>
+            <p>
+              <strong>Nhiệt độ:</strong> {selectedFeature.temperature}°C
+            </p>
+            <p>
+              <strong>Gió:</strong> {selectedFeature.wind} km/h
+            </p>
+            <p>
+              <strong>Độ ẩm:</strong> {selectedFeature.humidity}%
+            </p>
+          </div>
+        ) : (
+          <p>Bấm vào một điểm trên bản đồ để xem chi tiết thời tiết.</p>
+        )}
+      </div>
+    </>
+  )
 }
 
 export default GeoJSONLayer

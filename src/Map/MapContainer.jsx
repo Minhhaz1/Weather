@@ -41,7 +41,6 @@ const geoJsonData = {
 }
 
 const MapContainer = ({ displayOption }) => {
-  const [clickedCoords, setClickedCoords] = useState(null)
   const vietnamBounds = [
     [8.1790665, 102.14441],
     [23.3929, 109.469]
@@ -65,14 +64,7 @@ const MapContainer = ({ displayOption }) => {
         <TileLayer />
         <GeoJSONLayer />
         <Search />
-        <ClickHandler setClickedCoords={setClickedCoords} />
-        {clickedCoords && (
-          <Marker position={[clickedCoords.lat, clickedCoords.lng]}>
-            <Popup>
-              Tọa độ: {clickedCoords.lat}, {clickedCoords.lng}
-            </Popup>
-          </Marker>
-        )}
+        <ClickHandler weatherData={geoJsonData} />
       </LeafletMap>
     </MapContext.Provider>
   )
