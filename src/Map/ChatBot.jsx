@@ -72,11 +72,14 @@ const Chatbot = ({ isVisible, toggleVisibility }) => {
       <div
         style={{
           flexGrow: 1,
-          overflowY: 'scroll',
+          overflowY: 'scroll', // Chỉ cho phép cuộn dọc
+          wordWrap: 'break-word', // Tự động xuống dòng khi quá dài
+          whiteSpace: 'pre-wrap', // Bảo toàn khoảng trắng và xuống dòng
           marginBottom: '10px',
           border: '1px solid #ddd',
           borderRadius: '5px',
-          padding: '5px'
+          padding: '5px',
+          height: '85%'
         }}
       >
         {messages.map((msg, index) => (

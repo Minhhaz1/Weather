@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { GeoJSON } from 'react-leaflet'
 import { MapContext } from './MapContainer'
-import DetailWeather from './DetailWeather'
 
 const GeoJSONLayer = ({ data }) => {
   const [selectedFeature, setSelectedFeature] = useState(null)

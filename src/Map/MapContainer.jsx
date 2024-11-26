@@ -1,8 +1,9 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { MapContainer as LeafletMap, Marker, Popup } from 'react-leaflet'
 import TileLayer from './TileLayer'
 import GeoJSONLayer from './GeoJSONLayer'
 // import ClickHandler from './ClickHandler'
+import getWeathers from './weathersApi'
 
 import { createContext } from 'react'
 import weatherData from './weatherData'
@@ -43,7 +44,70 @@ const geoJsonData = {
 
 const MapContainer = ({ displayOption }) => {
   const [chatbotVisible, setChatbotVisible] = useState(false)
+  const [weathers, setWeathers] = useState([])
+  const [geoJsonData, setGeoJsonData] = useState(null)
+  useEffect(() => {
+    const fetchWeatherData = async () => {
+      try {
+        const res = await getWeathers('20241011')
+        const weatherData = res.data || res // Xử lý dữ liệu nhận được
+        if (!weatherData || weatherData.length === 0) {
+          console.warn('No weather data available from API')
+          return
+        }
 
+        setWeathers(weatherData)
+        console.log(weathers)
+        // Tạo GeoJSON từ dữ liệu nhận được
+        const geoJson = {
+          type: 'FeatureCollection',
+          features: weatherData.map((data) => {
+            const offset = 0.25
+
+            // Kiểm tra giá trị null hoặc undefined và cung cấp giá trị mặc định
+            const lon = data.longitude ?? 0 // Mặc định là 0 nếu `longitude` null
+            const lat = data.latitude ?? 0 // Mặc định là 0 nếu `latitude` null
+            const name = data.district ?? 'Unknown' // Tên mặc định
+            const temperature = data.temperature ?? 'N/A'
+            const humidity = data.humidity ?? 'N/A'
+            const wind = data.wind_speed ?? 'N/A'
+
+            const polygonCoordinates = [
+              [
+                [lon - offset, lat - offset],
+                [lon + offset, lat - offset],
+                [lon + offset, lat + offset],
+                [lon - offset, lat + offset],
+                [lon - offset, lat - offset]
+              ]
+            ]
+
+            return {
+              type: 'Feature',
+              properties: {
+                name,
+                temperature,
+                humidity,
+                wind
+              },
+              geometry: {
+                type: 'Polygon',
+                coordinates: polygonCoordinates
+              }
+            }
+          })
+        }
+
+        // Lưu GeoJSON vào state
+        setGeoJsonData(geoJson)
+        console.log('GeoJSON Data:', geoJson)
+      } catch (error) {
+        console.error('Error fetching weather:', error.message)
+      }
+    }
+
+    fetchWeatherData()
+  }, [])
   const toggleChatbot = () => {
     setChatbotVisible((prev) => !prev)
   }
