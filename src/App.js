@@ -14,8 +14,6 @@ const App = () => {
 
   return (
     <div style={{ height: '100vh', width: '100%', position: 'relative' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '10px' }}>Bản đồ nhiệt độ Việt Nam</h1>
-
       <Sidebar onOptionChange={(option) => setDisplayOption(option)} />
       <MapContainer displayOption={displayOption} />
     </div>

@@ -3,7 +3,7 @@ import { MapContext } from './MapContainer'
 import { Marker, Popup, useMap } from 'react-leaflet'
 
 const Search = () => {
-  const { geoJsonData } = useContext(MapContext) // Lấy dữ liệu từ context
+  const { geoJson } = useContext(MapContext) // Lấy dữ liệu từ context
   const [searchTerm, setSearchTerm] = useState('')
   const [filteredCities, setFilteredCities] = useState([])
   const [selectedCity, setSelectedCity] = useState(null) // Thành phố được chọn
@@ -17,7 +17,7 @@ const Search = () => {
     if (!value) {
       setFilteredCities([]) // Nếu không nhập từ khóa, xóa kết quả tìm kiếm
     } else {
-      const filtered = geoJsonData.features.filter((feature) =>
+      const filtered = geoJson.features.filter((feature) =>
         feature.properties.name.toLowerCase().includes(value.toLowerCase())
       )
       setFilteredCities(filtered) // Cập nhật danh sách kết quả tìm kiếm
