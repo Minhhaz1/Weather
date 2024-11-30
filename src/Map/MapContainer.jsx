@@ -10,6 +10,7 @@ import weatherData from './weatherData'
 import Search from './Search'
 import ClickHandler from './Click'
 import Chatbot from './ChatBot'
+import TileLayerWithRadar from './TileLayer'
 
 export const MapContext = createContext()
 
@@ -41,7 +42,7 @@ const geoJsonData = {
     }
   })
 }
-
+console.log(geoJsonData)
 const MapContainer = ({ displayOption }) => {
   const [chatbotVisible, setChatbotVisible] = useState(false)
   const [weathers, setWeathers] = useState([])
@@ -65,7 +66,7 @@ const MapContainer = ({ displayOption }) => {
           features: Object.values(
             weatherData.reduce((acc, data) => {
               const key = data.location_id // Nhóm dữ liệu theo `location_id`
-              const offset = 0.25
+              const offset = 0.075
               const formatFullName = (ward, district, province) => {
                 if (!ward && !district && !province) return 'Không xác định'
                 return [ward, district, province].filter(Boolean).join(', ') // Loại bỏ giá trị null/undefined và nối chuỗi
@@ -98,6 +99,12 @@ const MapContainer = ({ displayOption }) => {
                 hour: data.time_id,
                 temperature: data.tempc ?? 'N/A',
                 humidity: data.humidity ?? 'N/A',
+                cloudcovevr: data.cloudcovevr ?? 'N/A',
+                visibility: data.visibility ?? 'N/A',
+                maxtempc: data.maxtempc ?? 'N/A',
+                mintempc: data.mintempc ?? 'N/A',
+                avgtempc: data.avgtempc ?? 'N/A',
+                pressure: data.pressure ?? 'N/A',
                 wind: data.windspeedkmph ?? 'N/A'
               })
 
@@ -136,6 +143,7 @@ const MapContainer = ({ displayOption }) => {
       value={{
         geoJson,
         weatherData,
+        geoJsonData,
         displayOption
       }}
     >
@@ -147,6 +155,12 @@ const MapContainer = ({ displayOption }) => {
         style={{ height: '100%', width: '100%' }}
       >
         <TileLayer />
+        {/* <TileLayer
+          url='https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=4fa260aa66af6dbdda07035ef22b99c0'
+          attribution="&copy; <a href='https://openweathermap.org/'>OpenWeatherMap</a>"
+          opacity={0.9} // Độ trong suốt radar
+        /> */}
+
         {geoJson && <GeoJSONLayer />}
         <Search />
         <ClickHandler weatherData={geoJson} />

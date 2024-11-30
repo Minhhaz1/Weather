@@ -1,9 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
-
+import troiIcon from '../access/troi.png'
+import L from 'leaflet'
+import { MapContext } from './MapContainer'
 const ClickHandler = () => {
   const [clickedCoords, setClickedCoords] = useState(null)
-
+  const { geoJson } = useContext(MapContext)
+  const currentHour = new Date().getHours() % 24 // Đảm bảo giá trị từ 0 đến 23
+  // const hourlyData = geoJson.properties.hourlyData || []
+  // const currentData = hourlyData.find((hour) => hour.hour === String(currentHour)) || {}
+  const starIcon = L.divIcon({
+    className: 'custom-star-icon',
+    html: '<div style="color: gold; font-size: 24px;">★</div>', // Biểu tượng ngôi sao
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16]
+  })
   // Sử dụng hook useMapEvents để bắt sự kiện click
   useMapEvents({
     click: (e) => {
@@ -15,25 +27,116 @@ const ClickHandler = () => {
 
   // Hiển thị Marker khi tọa độ được chọn
   return clickedCoords ? (
-    <Marker position={[clickedCoords.lat, clickedCoords.lng]}>
+    <Marker position={[clickedCoords.lat, clickedCoords.lng]} icon={starIcon}>
       <Popup>
         <div
           style={{
             fontFamily: 'Arial, sans-serif',
-            color: '#333',
-            background: '#f8f9fa',
+            color: '#fff',
+            background: '#3b3f6b', // Màu nền tương tự hình ảnh
             borderRadius: '10px',
-            padding: '10px',
-            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)'
+            padding: '15px',
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+            width: '300px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '15px', // Tạo khoảng cách đều giữa các phần tử
+            boxSizing: 'border-box'
           }}
         >
-          <h3 style={{ margin: '0', fontSize: '16px', fontWeight: 'bold' }}>Tọa độ chi tiết</h3>
-          <p style={{ margin: '4px 0', fontSize: '14px' }}>
-            <strong>Lat:</strong> {clickedCoords.lat}
-          </p>
-          <p style={{ margin: '4px 0', fontSize: '14px' }}>
-            <strong>Lng:</strong> {clickedCoords.lng}
-          </p>
+          {/* Header */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}
+          >
+            <h3
+              style={{
+                margin: '0',
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}
+            >
+              Thời tiết hiện tại
+            </h3>
+            <h4
+              style={{
+                margin: '0',
+                fontSize: '14px',
+                fontWeight: 'normal'
+              }}
+            >
+              Địa điểm
+            </h4>
+          </div>
+
+          {/* Nhiệt độ */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px'
+            }}
+          >
+            <img
+              src={troiIcon}
+              alt='Weather Icon'
+              style={{
+                width: '50px',
+                height: '50px'
+              }}
+            />
+            <div>
+              <p
+                style={{
+                  margin: '0',
+                  fontSize: '36px',
+                  fontWeight: 'bold'
+                }}
+              >
+                19°C
+              </p>
+              <p
+                style={{
+                  margin: '0',
+                  fontSize: '14px'
+                }}
+              >
+                Trời hầu như quang mây. Nhiệt độ thấp là 16°C.
+              </p>
+            </div>
+          </div>
+
+          {/* Chỉ số thời tiết */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              marginTop: '10px',
+              borderTop: '1px solid rgba(255, 255, 255, 0.5)',
+              paddingTop: '10px',
+              fontSize: '14px'
+            }}
+          >
+            <div style={{ textAlign: 'center' }}>
+              <strong>Gió</strong>
+              <p style={{ margin: '5px 0' }}>5 km/giờ</p>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <strong>Độ ẩm</strong>
+              <p style={{ margin: '5px 0' }}>55%</p>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <strong>Tầm nhìn</strong>
+              <p style={{ margin: '5px 0' }}>10 km</p>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <strong>Áp suất</strong>
+              <p style={{ margin: '5px 0' }}>1019 mb</p>
+            </div>
+          </div>
         </div>
       </Popup>
     </Marker>

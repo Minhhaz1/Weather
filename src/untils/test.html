@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Info</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #2b2e4a;
+        color: white;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .weather-card {
+        background-color: #3b3f6b;
+        border-radius: 15px;
+        padding: 20px;
+        width: 350px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      .weather-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .weather-header h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #c4c8e0;
+      }
+      .weather-header a {
+        color: #76aefb;
+        font-size: 12px;
+        text-decoration: none;
+      }
+      .weather-main {
+        display: flex;
+        align-items: center;
+        margin-top: 15px;
+      }
+      .weather-main img {
+        width: 50px;
+        height: 50px;
+      }
+      .weather-temp {
+        font-size: 48px;
+        margin: 0 15px;
+      }
+      .weather-desc {
+        font-size: 16px;
+        color: #c4c8e0;
+      }
+      .weather-extra {
+        margin-top: 15px;
+        font-size: 14px;
+        color: #c4c8e0;
+      }
+      .weather-stats {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+        border-top: 1px solid #5c5f8b;
+        padding-top: 10px;
+        font-size: 14px;
+      }
+      .weather-stats div {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="weather-card">
+      <div class="weather-header">
+        <h3>Thời tiết hiện tại</h3>
+        <h3>Địa điểm</h3>
+      </div>
+      <div class="weather-main">
+        <img src="../access/troi.png" alt="weather icon" />
+        <div>
+          <p class="weather-temp">19°C</p>
+        </div>
+      </div>
+      <p class="weather-extra">Trời hầu như quang mây. Nhiệt độ thấp là 16°C.</p>
+      <div class="weather-stats">
+        <div>
+          <p><strong>Gió</strong></p>
+          <p>5 km/giờ</p>
+        </div>
+        <div>
+          <p><strong>Độ ẩm</strong></p>
+          <p>55%</p>
+        </div>
+        <div>
+          <p><strong>Tầm nhìn</strong></p>
+          <p>10 km</p>
+        </div>
+        <div>
+          <p><strong>Áp suất</strong></p>
+          <p>1019 mb</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
