@@ -1,76 +1,42 @@
 import React from 'react'
 import { Line } from 'react-chartjs-2'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js'
 
-// Đăng ký các thành phần cần thiết
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
-
-const WeatherChart = ({ selectedFeature }) => {
-  if (!selectedFeature || !selectedFeature.hourlyData) {
-    return (
-      <p
-        style={{
-          textAlign: 'center',
-          color: '#888',
-          fontStyle: 'italic',
-          marginTop: '20px'
-        }}
-      >
-        Bấm vào một điểm trên bản đồ để xem chi tiết thời tiết.
-      </p>
-    )
-  }
-
-  const labels = selectedFeature.hourlyData.map((hourData) => `${hourData.hour}:00`)
-  const temperatureData = selectedFeature.hourlyData.map((hourData) => hourData.temperature ?? 0)
-  const humidityData = selectedFeature.hourlyData.map((hourData) => hourData.humidity ?? 0)
-  const windData = selectedFeature.hourlyData.map((hourData) => hourData.wind ?? 0)
-
-  const data = {
-    labels,
+// Tùy chỉnh dữ liệu và tùy chọn biểu đồ
+const ChartBackground = ({ data }) => {
+  // Dữ liệu mẫu, bạn có thể thay đổi theo `selectedFeature`
+  const chartData = {
+    labels: data.map((d) => `${d.hour}:00`), // Trục X (giờ)
     datasets: [
       {
         label: 'Nhiệt độ (°C)',
-        data: temperatureData,
-        borderColor: 'rgba(255, 99, 132, 1)',
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        tension: 0.3
-      },
-      {
-        label: 'Độ ẩm (%)',
-        data: humidityData,
-        borderColor: 'rgba(54, 162, 235, 1)',
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        tension: 0.3
-      },
-      {
-        label: 'Gió (km/h)',
-        data: windData,
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        tension: 0.3
+        data: data.map((d) => d.temperature), // Dữ liệu nhiệt độ
+        fill: true,
+        backgroundColor: 'rgba(0, 123, 255, 0.2)', // Nền biểu đồ
+        borderColor: 'rgba(0, 123, 255, 1)', // Màu viền
+        pointBackgroundColor: 'rgba(0, 123, 255, 1)', // Màu điểm
+        tension: 0.4 // Đường cong mềm mại
       }
     ]
   }
 
-  const options = {
+  const chartOptions = {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top'
+        display: false // Ẩn nhãn biểu đồ
+      }
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false // Ẩn đường lưới trục X
+        }
       },
-      title: {
-        display: true,
-        text: `Chi tiết thời tiết - ${selectedFeature.name}`
+      y: {
+        grid: {
+          display: true // Hiển thị đường lưới trục Y
+        },
+        beginAtZero: true
       }
     }
   }
@@ -78,17 +44,21 @@ const WeatherChart = ({ selectedFeature }) => {
   return (
     <div
       style={{
-        maxWidth: '800px',
-        margin: '20px auto',
-        padding: '10px',
-        border: '1px solid #ddd',
-        borderRadius: '10px',
-        backgroundColor: '#f4faff'
+        backgroundColor: 'white',
+        height: '200px',
+        position: 'fixed',
+        bottom: '0',
+        left: '0',
+        width: '100%',
+        zIndex: 1000,
+        boxShadow: '0px -4px 8px rgba(0, 0, 0, 0.1)',
+        borderRadius: '8px 8px 0 0',
+        padding: '10px'
       }}
     >
-      <Line data={data} options={options} />
+      <Line data={chartData} options={chartOptions} />
     </div>
   )
 }
 
-export default WeatherChart
+export default ChartBackground

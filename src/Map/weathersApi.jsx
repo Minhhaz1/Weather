@@ -3,8 +3,8 @@ import http from '../untils/http'
 // Hàm gọi API lấy dữ liệu thời tiết theo `date_id`
 const getWeathers = async (dateId) => {
   try {
-    const response = await http.get('weather', {
-      params: { date_id: dateId }
+    const response = await http.get('api', {
+      params: { Date: dateId }
     })
     console.log('API response:', response) // Kiểm tra toàn bộ phản hồi từ API
     return response // Trả về toàn bộ đối tượng phản hồi

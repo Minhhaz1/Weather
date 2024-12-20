@@ -1,0 +1,31 @@
+.chat {
+  height: 300px;
+  width: 50vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+::-webkit-input-placeholder {
+  color: 0.711;
+}
+
+input {
+  border: 0;
+  padding: 15px;
+  margin-left: auto;
+  border-radius: 10px;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+  height: 90%;
+  width: 100%;
+  background-color: white;
+  padding: 15px;
+  margin: 15px;
+  border-radius: 10px;
+}

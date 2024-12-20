@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 
 const Chatbot = ({ isVisible, toggleVisibility }) => {
   const [messages, setMessages] = useState([
@@ -22,7 +22,6 @@ const Chatbot = ({ isVisible, toggleVisibility }) => {
   }
 
   const generateBotResponse = (message) => {
-    // Logic xử lý câu hỏi và trả lời
     const lowerMessage = message.toLowerCase()
     if (lowerMessage.includes('hello') || lowerMessage.includes('xin chào')) {
       return 'Xin chào! Tôi có thể giúp gì cho bạn?'
@@ -35,7 +34,7 @@ const Chatbot = ({ isVisible, toggleVisibility }) => {
     }
   }
 
-  if (!isVisible) return null // Không render nếu không hiển thị
+  if (!isVisible) return null
 
   return (
     <div
@@ -46,7 +45,7 @@ const Chatbot = ({ isVisible, toggleVisibility }) => {
         zIndex: 1000,
         width: '300px',
         height: '400px',
-        backgroundColor: '#f1f1f1',
+        backgroundColor: '#f9f9f9',
         borderRadius: '10px',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
         padding: '10px',
@@ -55,7 +54,7 @@ const Chatbot = ({ isVisible, toggleVisibility }) => {
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 style={{ margin: 0 }}>Chatbot</h3>
+        <h3 style={{ margin: 0, fontSize: '18px', color: '#007bff' }}>Chatbot</h3>
         <button
           onClick={toggleVisibility}
           style={{
@@ -69,33 +68,41 @@ const Chatbot = ({ isVisible, toggleVisibility }) => {
           ✖
         </button>
       </div>
+
       <div
+        id='chat'
         style={{
           flexGrow: 1,
-          overflowY: 'scroll', // Chỉ cho phép cuộn dọc
-          wordWrap: 'break-word', // Tự động xuống dòng khi quá dài
-          whiteSpace: 'pre-wrap', // Bảo toàn khoảng trắng và xuống dòng
-          marginBottom: '10px',
+          overflowY: 'auto',
+          marginTop: '10px',
+          padding: '10px',
           border: '1px solid #ddd',
           borderRadius: '5px',
-          padding: '5px',
-          height: '85%'
+          backgroundColor: '#fff',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px'
         }}
       >
         {messages.map((msg, index) => (
-          <p
+          <div
             key={index}
             style={{
-              textAlign: msg.sender === 'bot' ? 'left' : 'right',
-              margin: '5px 0',
-              color: msg.sender === 'bot' ? '#000' : '#007bff'
+              alignSelf: msg.sender === 'bot' ? 'flex-start' : 'flex-end', // Căn bên trái cho bot, bên phải cho người dùng
+              backgroundColor: msg.sender === 'bot' ? '#e8e8e8' : '#007bff',
+              color: msg.sender === 'bot' ? '#000' : '#fff',
+              padding: '10px',
+              borderRadius: msg.sender === 'bot' ? '10px 10px 10px 0px' : '10px 10px 0px 10px',
+              maxWidth: '70%',
+              wordWrap: 'break-word'
             }}
           >
             {msg.text}
-          </p>
+          </div>
         ))}
       </div>
-      <div style={{ display: 'flex' }}>
+
+      <div style={{ display: 'flex', marginTop: '10px' }}>
         <input
           type='text'
           placeholder='Nhập tin nhắn...'
@@ -103,17 +110,17 @@ const Chatbot = ({ isVisible, toggleVisibility }) => {
           onChange={(e) => setUserMessage(e.target.value)}
           style={{
             flexGrow: 1,
-            padding: '8px',
+            padding: '10px',
             border: '1px solid #ddd',
             borderRadius: '5px',
             marginRight: '10px'
           }}
-          onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()} // Gửi khi nhấn Enter
+          onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
         />
         <button
           onClick={handleSendMessage}
           style={{
-            padding: '8px 15px',
+            padding: '10px',
             backgroundColor: '#007bff',
             color: '#fff',
             border: 'none',

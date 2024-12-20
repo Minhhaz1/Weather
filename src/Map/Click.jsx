@@ -1,12 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
-import troiIcon from '../access/troi.png'
+import troiIcon from './png/storm.gif'
 import L from 'leaflet'
 import { MapContext } from './MapContainer'
-const ClickHandler = () => {
-  const [clickedCoords, setClickedCoords] = useState(null)
+const ClickHandler = ({ selectedFeature }) => {
+  console.log(selectedFeature, selectedFeature.lon, selectedFeature.lat)
+
   const { geoJson } = useContext(MapContext)
   const currentHour = new Date().getHours() % 24 // Đảm bảo giá trị từ 0 đến 23
+  const cur = Math.floor(currentHour / 3)
+  const targetHour = cur * 300
+
   // const hourlyData = geoJson.properties.hourlyData || []
   // const currentData = hourlyData.find((hour) => hour.hour === String(currentHour)) || {}
   const starIcon = L.divIcon({
@@ -17,17 +21,17 @@ const ClickHandler = () => {
     popupAnchor: [0, -16]
   })
   // Sử dụng hook useMapEvents để bắt sự kiện click
-  useMapEvents({
-    click: (e) => {
-      const { lat, lng } = e.latlng // Lấy tọa độ từ sự kiện click
-      setClickedCoords({ lat, lng }) // Cập nhật tọa độ vào state
-      console.log('Tọa độ : ' + lat + ' : ' + lng)
-    }
-  })
+  // useMapEvents({
+  //   click: (e) => {
+  //     const { lat, lng } = e.latlng // Lấy tọa độ từ sự kiện click
+  //     setClickedCoords({ lat, lng }) // Cập nhật tọa độ vào state
+  //     console.log('Tọa độ : ' + lat + ' : ' + lng)
+  //   }
+  // })
 
   // Hiển thị Marker khi tọa độ được chọn
-  return clickedCoords ? (
-    <Marker position={[clickedCoords.lat, clickedCoords.lng]} icon={starIcon}>
+  return (
+    <Marker position={[selectedFeature.lat, selectedFeature.lon]} icon={starIcon}>
       <Popup>
         <div
           style={{
@@ -96,7 +100,7 @@ const ClickHandler = () => {
                   fontWeight: 'bold'
                 }}
               >
-                19°C
+                {selectedFeature.hourlyData.find((hour) => hour.hour === targetHour)?.temperature}
               </p>
               <p
                 style={{
@@ -122,25 +126,33 @@ const ClickHandler = () => {
           >
             <div style={{ textAlign: 'center' }}>
               <strong>Gió</strong>
-              <p style={{ margin: '5px 0' }}>5 km/giờ</p>
+              <p style={{ margin: '5px 0' }}>
+                {selectedFeature.hourlyData.find((hour) => hour.hour === targetHour)?.wind} km/giờ
+              </p>
             </div>
             <div style={{ textAlign: 'center' }}>
               <strong>Độ ẩm</strong>
-              <p style={{ margin: '5px 0' }}>55%</p>
+              <p style={{ margin: '5px 0' }}>
+                {selectedFeature.hourlyData.find((hour) => hour.hour === targetHour)?.humidity} %
+              </p>
             </div>
             <div style={{ textAlign: 'center' }}>
               <strong>Tầm nhìn</strong>
-              <p style={{ margin: '5px 0' }}>10 km</p>
+              <p style={{ margin: '5px 0' }}>
+                {selectedFeature.hourlyData.find((hour) => hour.hour === targetHour)?.visibility} km
+              </p>
             </div>
             <div style={{ textAlign: 'center' }}>
               <strong>Áp suất</strong>
-              <p style={{ margin: '5px 0' }}>1019 mb</p>
+              <p style={{ margin: '5px 0' }}>
+                {selectedFeature.hourlyData.find((hour) => hour.hour === targetHour)?.pressure} mb
+              </p>
             </div>
           </div>
         </div>
       </Popup>
     </Marker>
-  ) : null // Trả về null nếu không có tọa độ được chọn
+  ) // Trả về null nếu không có tọa độ được chọn
 }
 
 export default ClickHandler

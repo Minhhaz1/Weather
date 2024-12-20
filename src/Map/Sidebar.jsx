@@ -14,7 +14,7 @@ const Sidebar = ({ onOptionChange }) => {
         position: 'absolute', // Sidebar đè lên bản đồ
         top: '200px', // Căn chỉnh từ trên xuống
         left: '0', // Nằm sát bên trái
-        width: '60px', // Chiều rộng của Sidebar
+        width: '100px', // Chiều rộng của Sidebar
         height: '230px', // Chiều cao cố định (đủ để hiển thị 3 nút)
         backgroundColor: 'rgba(255, 255, 255, 0)', // Nền trong suốt 70%
         // borderRight: '1px solid #ddd', // Viền bên phải
