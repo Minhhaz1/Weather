@@ -6,6 +6,7 @@ import { Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 // import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons'
 import IconVitri from '../access/vitri.jpg'
+import ClickHandler from './Click'
 
 const Search = () => {
   const { geoJson } = useContext(MapContext) // Lấy dữ liệu từ context
@@ -78,10 +79,10 @@ const Search = () => {
   const currentHour = new Date().getHours() % 24
   // const currentData = hourlyData.find((hour) => hour.hour === String(currentHour)) || {}
   // Tìm thông tin từ hourlyData theo giờ hiện tại
-  const currentData = selectedCity?.properties?.hourlyData.find((data) => data.hour === String(currentHour)) || null
+  const currentData = selectedCity?.properties?.hourlyData.find((data) => data.hour === currentHour) || null
   console.log(currentData)
   return (
-    <div style={{ position: 'relative', zIndex: 1000, width: '300px', margin: '10px' }}>
+    <div style={{ position: 'relative', zIndex: 1000, width: '300px', margin: '10px', marginLeft: '50px' }}>
       <input
         type='text'
         placeholder='Tìm kiếm thành phố...'
@@ -123,7 +124,7 @@ const Search = () => {
             background: '#fff',
             padding: '10px',
             borderRadius: '5px',
-            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)'
+            boxShadow: '0 2px 6px rgb(253, 140, 1)'
           }}
         >
           {filteredCities.map((city, index) => (
@@ -135,6 +136,7 @@ const Search = () => {
                 padding: '5px',
                 borderRadius: '5px',
                 background: '#f5f5f5',
+                color: 'black', // Chữ màu đen
                 transition: 'background 0.3s'
               }}
               onClick={() => handleCityClick(city)}
@@ -146,58 +148,7 @@ const Search = () => {
           ))}
         </ul>
       )}
-      {selectedCity && (
-        <Marker
-          position={[selectedCity.geometry.coordinates[0][0][1], selectedCity.geometry.coordinates[0][0][0]]}
-          icon={starIcon}
-        >
-          <Popup>
-            {currentData ? (
-              <div
-                style={{
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                  fontSize: '14px',
-                  color: '#333',
-                  textAlign: 'left'
-                }}
-              >
-                <h4
-                  style={{
-                    marginBottom: '8px',
-                    color: '#333',
-                    fontWeight: 'bold',
-                    fontSize: '16px'
-                  }}
-                >
-                  Thời tiết hiện tại
-                </h4>
-                <p style={{ margin: '4px 0' }}>
-                  <strong style={{ color: '#555' }}>Nhiệt độ:</strong>{' '}
-                  <span style={{ color: '#FF6600' }}>{currentData.temperature}°C</span>
-                </p>
-                <p style={{ margin: '4px 0' }}>
-                  <strong style={{ color: '#555' }}>Độ ẩm:</strong>{' '}
-                  <span style={{ color: '#007BFF' }}>{currentData.humidity}%</span>
-                </p>
-                <p style={{ margin: '4px 0' }}>
-                  <strong style={{ color: '#555' }}>Tốc độ gió:</strong>{' '}
-                  <span style={{ color: '#2ECC71' }}>{currentData.wind} km/h</span>
-                </p>
-                <p style={{ margin: '4px 0' }}>
-                  <strong style={{ color: '#555' }}>Áp suất:</strong>{' '}
-                  <span style={{ color: '#FF3366' }}>{currentData.pressure} mb</span>
-                </p>
-                <p style={{ margin: '4px 0' }}>
-                  <strong style={{ color: '#555' }}>Điểm sương:</strong>{' '}
-                  <span style={{ color: '#9B59B6' }}>{currentData.visibility}°C</span>
-                </p>
-              </div>
-            ) : (
-              <span>Không có dữ liệu thời tiết cho giờ hiện tại</span>
-            )}
-          </Popup>
-        </Marker>
-      )}
+      {selectedCity && <ClickHandler selectedFeature={selectedCity.properties} />}
       {isPopupVisible && (
         <Marker position={location} icon={starIcon}>
           <Popup>

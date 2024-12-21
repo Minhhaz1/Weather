@@ -316,20 +316,83 @@ const WeatherForecast = ({ selectedFeature }) => {
                 <span data-do='metric,hour' className='legend-right'></span>
               </div>
             </td>
-            <td data-ts='1733367600000'>0:00</td>
-            <td data-ts='1733378400000'>3:00</td>
-            <td data-ts='1733389200000'>6:00</td>
-            <td data-ts='1733400000000'>9:00</td>
-            <td data-ts='1733400000000'>12:00</td>
+            <td data-ts='1733367600000'>00:00</td>
+            <td data-ts='1733367600000'>01:00</td>
+            <td data-ts='1733367600000'>02:00</td>
+            <td data-ts='1733367600000'>03:00</td>
+            <td data-ts='1733367600000'>04:00</td>
+            <td data-ts='1733367600000'>05:00</td>
+            <td data-ts='1733367600000'>06:00</td>
+            <td data-ts='1733367600000'>07:00</td>
+            <td data-ts='1733367600000'>08:00</td>
+            <td data-ts='1733367600000'>09:00</td>
+            <td data-ts='1733367600000'>10:00</td>
+            <td data-ts='1733367600000'>11:00</td>
+            <td data-ts='1733367600000'>12:00</td>
+            <td data-ts='1733378400000'>13:00</td>
+            <td data-ts='1733389200000'>14:00</td>
             <td data-ts='1733400000000'>15:00</td>
+            <td data-ts='1733400000000'>16:00</td>
+            <td data-ts='1733400000000'>17:00</td>
             <td data-ts='1733400000000'>18:00</td>
+            <td data-ts='1733367600000'>19:00</td>
+            <td data-ts='1733367600000'>20:00</td>
             <td data-ts='1733400000000'>21:00</td>
+            <td data-ts='1733367600000'>22:00</td>
+            <td data-ts='1733367600000'>23:00</td>
 
             {/* Thêm các ô khác vào đây */}
           </tr>
           <tr className='td-icon height-icon d-display-table'>
             <td>{/* <img src={icon19} alt='Icon 19' /> */}</td>
-
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>{' '}
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>{' '}
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>{' '}
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>{' '}
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>{' '}
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>{' '}
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>{' '}
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>{' '}
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>{' '}
+            <td>
+              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
+            </td>{' '}
             <td>
               <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
             </td>
@@ -345,7 +408,6 @@ const WeatherForecast = ({ selectedFeature }) => {
             <td>
               <img src={sunny} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
             </td>
-
             <td>
               <img src={storm} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
             </td>
@@ -355,7 +417,6 @@ const WeatherForecast = ({ selectedFeature }) => {
             <td>
               <img src={icon19} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
             </td>
-
             {/* Thêm các ảnh khác */}
           </tr>
           <tr className='td-temp height-temp d-display-table'>

@@ -8,8 +8,6 @@ const ClickHandler = ({ selectedFeature }) => {
 
   const { geoJson } = useContext(MapContext)
   const currentHour = new Date().getHours() % 24 // Đảm bảo giá trị từ 0 đến 23
-  const cur = Math.floor(currentHour / 3)
-  const targetHour = cur * 300
 
   // const hourlyData = geoJson.properties.hourlyData || []
   // const currentData = hourlyData.find((hour) => hour.hour === String(currentHour)) || {}
@@ -59,7 +57,7 @@ const ClickHandler = ({ selectedFeature }) => {
             <h3
               style={{
                 margin: '0',
-                fontSize: '16px',
+                fontSize: '12px',
                 fontWeight: 'bold'
               }}
             >
@@ -67,12 +65,12 @@ const ClickHandler = ({ selectedFeature }) => {
             </h3>
             <h4
               style={{
-                margin: '0',
+                marginLeft: '10px',
                 fontSize: '14px',
                 fontWeight: 'normal'
               }}
             >
-              Địa điểm
+              {selectedFeature.name}
             </h4>
           </div>
 
@@ -100,7 +98,7 @@ const ClickHandler = ({ selectedFeature }) => {
                   fontWeight: 'bold'
                 }}
               >
-                {selectedFeature.hourlyData.find((hour) => hour.hour === targetHour)?.temperature}
+                {selectedFeature.hourlyData.find((hour) => hour.hour === currentHour)?.temperature}
               </p>
               <p
                 style={{
@@ -127,25 +125,25 @@ const ClickHandler = ({ selectedFeature }) => {
             <div style={{ textAlign: 'center' }}>
               <strong>Gió</strong>
               <p style={{ margin: '5px 0' }}>
-                {selectedFeature.hourlyData.find((hour) => hour.hour === targetHour)?.wind} km/giờ
+                {selectedFeature.hourlyData.find((hour) => hour.hour === currentHour)?.wind} km/giờ
               </p>
             </div>
             <div style={{ textAlign: 'center' }}>
               <strong>Độ ẩm</strong>
               <p style={{ margin: '5px 0' }}>
-                {selectedFeature.hourlyData.find((hour) => hour.hour === targetHour)?.humidity} %
+                {selectedFeature.hourlyData.find((hour) => hour.hour === currentHour)?.humidity} %
               </p>
             </div>
             <div style={{ textAlign: 'center' }}>
               <strong>Tầm nhìn</strong>
               <p style={{ margin: '5px 0' }}>
-                {selectedFeature.hourlyData.find((hour) => hour.hour === targetHour)?.visibility} km
+                {selectedFeature.hourlyData.find((hour) => hour.hour === currentHour)?.visibility} km
               </p>
             </div>
             <div style={{ textAlign: 'center' }}>
               <strong>Áp suất</strong>
               <p style={{ margin: '5px 0' }}>
-                {selectedFeature.hourlyData.find((hour) => hour.hour === targetHour)?.pressure} mb
+                {selectedFeature.hourlyData.find((hour) => hour.hour === currentHour)?.pressure} mb
               </p>
             </div>
           </div>

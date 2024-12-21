@@ -88,6 +88,7 @@ const MapContainer = ({ displayOption }) => {
                   location_id: data.LocationID, // Lưu `location_id`
                   lon: data.Longitude ?? '0',
                   lat: data.Latitude ?? '0',
+                  region: data.Region,
                   name: formatFullName(data.Ward, data.District, data.Province), // Có thể thêm tên `district` nếu cần
                   hourlyData: [] // Mảng chứa dữ liệu thời tiết theo giờ
                 },
@@ -108,7 +109,7 @@ const MapContainer = ({ displayOption }) => {
 
             // Thêm dữ liệu thời tiết vào `hourlyData`
             acc[key].properties.hourlyData.push({
-              hour: data.hour,
+              hour: data.Hour,
               temperature: data.Temperature_C ?? 'N/A',
               humidity: data.Humidity ?? 'N/A',
               cloudcovevr: data.CloudCover ?? 'N/A',
@@ -178,7 +179,7 @@ const MapContainer = ({ displayOption }) => {
         /> */}
 
         {geoJson && <GeoJSONLayer />}
-        {/* <Search /> */}
+        <Search />
 
         {/* Nút bật/tắt Chatbot */}
         <button

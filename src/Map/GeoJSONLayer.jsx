@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react'
-import { GeoJSON, useMapEvents } from 'react-leaflet'
+import { GeoJSON, Marker, useMapEvents } from 'react-leaflet'
 import { MapContext } from './MapContainer'
+import L from 'leaflet'
 import WeatherChart from './WeatherChart'
 import WeatherForecast from './WeatherChart2'
 import ClickHandler from './Click'
@@ -9,47 +10,61 @@ const GeoJSONLayer = ({ data }) => {
   const [selectedFeature, setSelectedFeature] = useState(null)
   const { weatherData, geoJson, displayOption } = useContext(MapContext)
   const [zoomLevel, setZoomLevel] = useState(5)
+  const [isRegionView, setisRegionView] = useState(true)
+  //  const [currentHour, setCurrentHour] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false)
   const map = useMapEvents({
     zoomend: () => {
-      setZoomLevel(map.getZoom()) // Cập nhật zoom khi zoomend
+      const currentZoom = map.getZoom() // Lấy giá trị zoom hiện tại
+      setZoomLevel(currentZoom) // Cập nhật zoomLevel
+      if (currentZoom <= 6) {
+        setisRegionView(true) // Region View nếu zoom nhỏ hơn 6
+      } else {
+        setisRegionView(false) // Tắt Region View nếu zoom >= 6
+      }
     }
   })
   console.log('ZoomLevel: ', zoomLevel)
+  console.log('isRegionView', isRegionView)
   console.log('Feature properties:', displayOption)
   if (!geoJson || !geoJson.features || geoJson.features.length === 0) {
     console.log('GeoJSON is not ready yet')
     return null // Không render gì nếu `geoJson` chưa có dữ liệu
   }
-  // const currentHour = new Date().getHours() % 24 // Đảm bảo giá trị từ 0 đến 23
-  const currentHour = 300
+  const currentHour = new Date().getHours() % 24 // Đảm bảo giá trị từ 0 đến 23
   console.log('Giờ: ', currentHour)
-  const getTemperatureColor = (temperature) => {
-    // Giới hạn nhiệt độ (tùy chỉnh theo thực tế)
-    const minTemp = 10 // Nhiệt độ thấp nhất
-    const maxTemp = 40 // Nhiệt độ cao nhất
-
-    // Đảm bảo nhiệt độ nằm trong khoảng giới hạn
-    const clampedTemp = Math.min(Math.max(temperature, minTemp), maxTemp)
-
-    // Chia nhiệt độ thành 2 khoảng chính:
-    // 0–20°C: Xanh (#0000FF) → Vàng (#FFFF00)
-    // 20–40°C: Vàng (#FFFF00) → Đỏ (#FF0000)
-    if (clampedTemp <= 20) {
-      // Tỷ lệ cho khoảng 0–20°C
-      const ratio = clampedTemp / 20
-      const r = Math.floor(255 * ratio) // Tăng từ 0 -> 255
-      const g = 255 // Giữ nguyên màu vàng
-      const b = Math.floor(255 * (1 - ratio)) // Giảm từ 255 -> 0
-      return `rgb(${r},${g},${b})`
-    } else {
-      // Tỷ lệ cho khoảng 20–40°C
-      const ratio = (clampedTemp - 20) / 20
-      const r = 255 // Giữ nguyên màu đỏ
-      const g = Math.floor(255 * (1 - ratio)) // Giảm từ 255 -> 0
-      const b = 0 // Không có màu xanh dương
-      return `rgb(${r},${g},${b})`
+  const getRegionColor = (region) => {
+    switch (region) {
+      case 'Tây Bắc':
+        return '#FF5733' // Màu cam đậm
+      case 'Đông Bắc':
+        return '#33FF57' // Màu xanh lá
+      case 'Tây Nguyên':
+        return '#3357FF' // Màu xanh dương
+      case 'Đông Nam Bộ':
+        return '#FF33FF' // Màu tím hồng
+      case 'Bắc Trung Bộ':
+        return '#FFBD33' // Màu vàng cam
+      case 'Nam Trung Bộ':
+        return '#FF3333' // Màu đỏ tươi
+      case 'Đồng bằng sông Cửu Long':
+        return '#33FFFF' // Màu xanh ngọc
+      case 'Đồng bằng sông Hồng':
+        return '#9933FF' // Màu tím đậm
+      default:
+        return '#CCCCCC' // Màu xám cho các vùng không xác định
     }
   }
+  const regionData = [
+    { name: 'Tây Bắc', lat: 21.5, lng: 103.9 },
+    { name: 'Đông Bắc', lat: 22, lng: 106.5 },
+    { name: 'Tây Nguyên', lat: 14.3, lng: 108.0 },
+    { name: 'Đông Nam Bộ', lat: 11.2, lng: 106.8 },
+    { name: 'Bắc Trung Bộ', lat: 18.5, lng: 105.7 },
+    { name: 'Nam Trung Bộ', lat: 13.9, lng: 109.2 },
+    { name: 'Đồng bằng sông Cửu Long', lat: 10.0, lng: 105.8 },
+    { name: 'Đồng bằng sông Hồng', lat: 20.3, lng: 106.2 }
+  ]
   const getTemperatureColor2 = (temperature) => {
     // Giới hạn nhiệt độ (tùy chỉnh theo thực tế)
     const minTemp = 0 // Nhiệt độ thấp nhất
@@ -117,7 +132,9 @@ const GeoJSONLayer = ({ data }) => {
   }
 
   const style = (feature) => ({
-    fillColor: getColorByOption(feature),
+    fillColor: isRegionView
+      ? getRegionColor(feature.properties.region) // Màu theo region
+      : getColorByOption(feature), // Màu theo thuộc tính
     weight: 0,
     opacity: 0,
     color: 'black',
@@ -135,6 +152,34 @@ const GeoJSONLayer = ({ data }) => {
   return (
     <>
       <GeoJSON data={geoJson} style={style} onEachFeature={onEachFeature} />
+
+      {isRegionView && (
+        <>
+          {regionData.map((region, index) => (
+            <Marker
+              key={index}
+              position={[region.lat, region.lng]}
+              icon={L.divIcon({
+                className: 'custom-marker',
+                html: `<div style="
+            font-size: 10px;
+            color: black;
+            font-family: 'Roboto', sans-serif; /* Font đẹp */
+            font-weight: bold; /* Đậm chữ */
+            text-align: center;
+            transform: scale(1); /* Cố định kích thước */
+            pointer-events: none; /* Ngăn tương tác với icon */
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8); /* Hiệu ứng bóng */
+          ">
+            ${region.name}
+          </div>`,
+                iconSize: [100, 40], // Kích thước biểu tượng
+                iconAnchor: [50, 20] // Tâm biểu tượng
+              })}
+            />
+          ))}
+        </>
+      )}
 
       {selectedFeature && (
         <>
