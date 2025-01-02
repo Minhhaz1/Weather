@@ -27,6 +27,34 @@ const ClickHandler = ({ selectedFeature }) => {
   //   }
   // })
 
+  const weatherDescriptions = {
+    Overcast: 'Trời u ám, nhiều mây.',
+    'Patchy rain nearby': 'Mưa rải rác gần đây.',
+    Fog: 'Sương mù, tầm nhìn hạn chế.',
+    'Moderate snow': 'Tuyết rơi vừa.',
+    'Patchy light rain': 'Mưa nhẹ rải rác.',
+    Cloudy: 'Nhiều mây.',
+    Clear: 'Trời quang đãng.',
+    'Thundery outbreaks possible': 'Có khả năng sấm sét.',
+    'Partly Cloudy': 'Trời ít mây.',
+    'Patchy light snow': 'Tuyết nhẹ rải rác.',
+    'Patchy heavy snow': 'Tuyết dày rải rác.',
+    'Moderate or heavy rain with thunder': 'Mưa vừa hoặc to kèm sấm sét.',
+    'Light rain': 'Mưa nhẹ.',
+    'Light rain shower': 'Mưa rào nhẹ.',
+    'Patchy light rain with thunder': 'Mưa nhẹ rải rác kèm sấm sét.',
+    'Heavy snow': 'Tuyết dày.',
+    'Patchy rain possible': 'Có thể mưa rải rác.',
+    'Patchy light drizzle': 'Mưa phùn nhẹ.',
+    'Light sleet': 'Mưa tuyết nhẹ.',
+    Mist: 'Sương mù nhẹ.',
+    'Light snow': 'Tuyết nhẹ.',
+    'Moderate rain': 'Mưa vừa.',
+    'Patchy moderate snow': 'Tuyết vừa rải rác.',
+    Sunny: 'Trời nắng.',
+    'Moderate rain at times': 'Đôi lúc có mưa vừa.'
+  }
+
   // Hiển thị Marker khi tọa độ được chọn
   return (
     <Marker position={[selectedFeature.lat, selectedFeature.lon]} icon={starIcon}>
@@ -98,15 +126,17 @@ const ClickHandler = ({ selectedFeature }) => {
                   fontWeight: 'bold'
                 }}
               >
-                {selectedFeature.hourlyData.find((hour) => hour.hour === currentHour)?.temperature}
+                {selectedFeature.hourlyData.find((hour) => hour.hour === currentHour)?.temperature}°C
               </p>
               <p
                 style={{
                   margin: '0',
-                  fontSize: '14px'
+                  fontSize: '17px'
                 }}
               >
-                Trời hầu như quang mây. Nhiệt độ thấp là 16°C.
+                {weatherDescriptions[
+                  selectedFeature?.hourlyData?.find((hour) => hour.hour === currentHour)?.description
+                ] || 'Không rõ thời tiết.'}
               </p>
             </div>
           </div>

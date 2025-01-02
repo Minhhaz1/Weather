@@ -26,7 +26,14 @@ const Chatbot = ({ isVisible, toggleVisibility }) => {
     if (lowerMessage.includes('hello') || lowerMessage.includes('xin chào')) {
       return 'Xin chào! Tôi có thể giúp gì cho bạn?'
     } else if (lowerMessage.includes('thời tiết')) {
-      return 'Thời tiết hôm nay rất đẹp!'
+      return (
+        <>
+          Nhiệt độ: 22 độ C <br />
+          Độ ẩm: 71% <br />
+          Gió: 1,29 KM/h <br />
+          Tầm nhìn: 10KM
+        </>
+      )
     } else if (lowerMessage.includes('giờ') || lowerMessage.includes('time')) {
       return `Hiện tại là ${new Date().toLocaleTimeString()}.`
     } else {

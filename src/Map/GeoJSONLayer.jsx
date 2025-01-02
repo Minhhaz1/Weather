@@ -1,17 +1,18 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { GeoJSON, Marker, useMapEvents } from 'react-leaflet'
 import { MapContext } from './MapContainer'
 import L from 'leaflet'
 import WeatherChart from './WeatherChart'
 import WeatherForecast from './WeatherChart2'
 import ClickHandler from './Click'
+import DynamicLegend from './DynamicLegend'
 
 const GeoJSONLayer = ({ data }) => {
   const [selectedFeature, setSelectedFeature] = useState(null)
   const { weatherData, geoJson, displayOption } = useContext(MapContext)
   const [zoomLevel, setZoomLevel] = useState(5)
   const [isRegionView, setisRegionView] = useState(true)
-  //  const [currentHour, setCurrentHour] = useState(0);
+  const [currentHour, setCurrentHour] = useState(new Date().getHours())
   const [isPlaying, setIsPlaying] = useState(false)
   const map = useMapEvents({
     zoomend: () => {
@@ -24,6 +25,24 @@ const GeoJSONLayer = ({ data }) => {
       }
     }
   })
+  useEffect(() => {
+    let timer
+    if (isPlaying) {
+      timer = setInterval(() => {
+        setCurrentHour((prevHour) => (prevHour + 1 > 23 ? new Date().getHours() : prevHour + 1))
+      }, 1000) // Increment every second
+    }
+    return () => clearInterval(timer)
+  }, [isPlaying])
+
+  const togglePlay = () => {
+    setIsPlaying((prev) => !prev)
+  }
+
+  const handleTimeChange = (hour) => {
+    setCurrentHour(hour)
+    setIsPlaying(false) // Stop playing when manually selecting a time
+  }
   console.log('ZoomLevel: ', zoomLevel)
   console.log('isRegionView', isRegionView)
   console.log('Feature properties:', displayOption)
@@ -31,7 +50,7 @@ const GeoJSONLayer = ({ data }) => {
     console.log('GeoJSON is not ready yet')
     return null // Không render gì nếu `geoJson` chưa có dữ liệu
   }
-  const currentHour = new Date().getHours() % 24 // Đảm bảo giá trị từ 0 đến 23
+  // const currentHour = new Date().getHours() % 24 // Đảm bảo giá trị từ 0 đến 23
   console.log('Giờ: ', currentHour)
   const getRegionColor = (region) => {
     switch (region) {
@@ -57,7 +76,7 @@ const GeoJSONLayer = ({ data }) => {
   }
   const regionData = [
     { name: 'Tây Bắc', lat: 21.5, lng: 103.9 },
-    { name: 'Đông Bắc', lat: 22, lng: 106.5 },
+    { name: 'Đông Bắc', lat: 22, lng: 106 },
     { name: 'Tây Nguyên', lat: 14.3, lng: 108.0 },
     { name: 'Đông Nam Bộ', lat: 11.2, lng: 106.8 },
     { name: 'Bắc Trung Bộ', lat: 18.5, lng: 105.7 },
@@ -103,6 +122,51 @@ const GeoJSONLayer = ({ data }) => {
     // Trả về màu tương ứng
     return colors[colorIndex]
   }
+  const getColorWind = (windSpeed) => {
+    // Giới hạn tốc độ gió
+    const minWind = 0 // Tốc độ gió thấp nhất
+    const maxWind = 40 // Tốc độ gió cao nhất (50 km/h)
+
+    // Mảng màu tùy chỉnh
+    const colors = [
+      '#66ff66', // 6-9 km/h: Xanh rất nhạt
+      '#33ff33', // 9-12 km/h: Xanh nhạt
+      '#00cc44', // 12-15 km/h: Xanh lá nhạt
+      '#009933', // 15-18 km/h: Xanh tươi
+      '#008000', // 18-21 km/h: Xanh vừa
+      '#006600', // 21-24 km/h: Xanh đậm
+      '#004d00', // 24-27 km/h: Xanh đậm hơn
+      '#003300' // 27-30 km/h: Xanh đậm nhất (mạnh nhất)
+    ]
+
+    // Đảm bảo tốc độ gió nằm trong khoảng giới hạn
+    const clampedWind = Math.min(Math.max(windSpeed, minWind), maxWind)
+
+    // Tính chỉ số của khoảng tốc độ gió
+    const colorIndex = Math.floor((clampedWind / maxWind) * (colors.length - 1))
+
+    // Trả về màu tương ứng
+    return colors[colorIndex]
+  }
+
+  // Hàm xử lý màu theo độ ẩm
+  const getColorHumidity = (humidity) => {
+    // Giới hạn độ ẩm
+    const minHumidity = 50 // Độ ẩm thấp nhất (0%)
+    const maxHumidity = 100 // Độ ẩm cao nhất (100%)
+
+    // Mảng màu tùy chỉnh
+    const colors = ['#A2D4F3', '#95CEF1', '#88C8EF', '#7BC2ED', '#6EBCEA', '#61B6E8', '#54B0E6', '#47AAE4']
+
+    // Đảm bảo độ ẩm nằm trong khoảng giới hạn
+    const clampedHumidity = Math.min(Math.max(humidity, minHumidity), maxHumidity)
+
+    // Tính chỉ số của khoảng độ ẩm
+    const colorIndex = Math.floor((clampedHumidity / maxHumidity) * (colors.length - 1))
+
+    // Trả về màu tương ứng
+    return colors[colorIndex]
+  }
   const getColorByOption = (feature) => {
     const hourlyData = feature.properties.hourlyData || []
     if (hourlyData.length === 0) {
@@ -113,19 +177,13 @@ const GeoJSONLayer = ({ data }) => {
     if (displayOption === 'temperature') {
       // console.log(getTemperatureColor2(currentData.temperature))
       return getTemperatureColor2(currentData.temperature)
-
-      // return currentData.temperature > 30
-      //   ? '#FF0000' // Đỏ cho nhiệt độ cao
-      //   : currentData.temperature < 20
-      //     ? '#0000FF' // Xanh cho nhiệt độ thấp
-      //     : '#FFFF00' // Vàng cho nhiệt độ trung bình
     }
     if (displayOption === 'wind') {
-      return currentData.wind > 5 ? '#FF5733' : '#33FF57' // Màu cam hoặc xanh
+      return getColorWind(currentData.wind) // Màu cam hoặc xanh
     }
 
     if (displayOption === 'humidity') {
-      return currentData.humidity > 80 ? '#0033CC' : '#66CCFF' // Xanh đậm hoặc nhạt
+      return getColorHumidity(currentData.humidity) // Xanh đậm hoặc nhạt
     }
 
     return '#FF5733' // Mặc định
@@ -137,8 +195,9 @@ const GeoJSONLayer = ({ data }) => {
       : getColorByOption(feature), // Màu theo thuộc tính
     weight: 0,
     opacity: 0,
-    color: 'black',
-    fillOpacity: 0.3
+    color: 'transparent', // Ẩn viền của ô
+    fillOpacity: 0.2, // Điều chỉnh độ mờ,
+    filter: 'blur(2px)' // Làm mờ các đường ranh giới giữa các ô
   })
 
   const onEachFeature = (feature, layer) => {
@@ -148,11 +207,38 @@ const GeoJSONLayer = ({ data }) => {
       }
     })
   }
+  const renderStormMarkers = () => {
+    return weatherData.map((data, index) => {
+      const lon = data.lon
+      const lat = data.lat
+
+      return (
+        <Marker
+          key={index}
+          position={[lat, lon]} // Vị trí của chấm đỏ
+          icon={L.divIcon({
+            className: 'custom-storm-marker',
+            html: `<div style="
+              width: 8px;
+              height: 8px;
+              background-color: red;
+              border-radius: 50%;
+              border: 2px solid white;
+              transform: translate(-50%, -50%);
+            "></div>`,
+            iconSize: [10, 10],
+            iconAnchor: [5, 5]
+          })}
+        />
+      )
+    })
+  }
 
   return (
     <>
       <GeoJSON data={geoJson} style={style} onEachFeature={onEachFeature} />
-
+      {renderStormMarkers()} {/* Render các chấm đỏ từ API */}
+      {!isRegionView && <DynamicLegend displayOption={displayOption} />}
       {isRegionView && (
         <>
           {regionData.map((region, index) => (
@@ -180,7 +266,6 @@ const GeoJSONLayer = ({ data }) => {
           ))}
         </>
       )}
-
       {selectedFeature && (
         <>
           {/* Gọi ClickHandler để hiển thị Marker */}
@@ -225,6 +310,77 @@ const GeoJSONLayer = ({ data }) => {
           </div>
         </>
       )}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: selectedFeature ? '200px' : '20px', // Push the controls above the div
+          left: '47%',
+          transform: 'translateX(-50%)',
+          width: '90%',
+          display: 'flex',
+          alignItems: 'center', // Align items along the center vertically
+          zIndex: 1101 // Higher zIndex to ensure it appears above the other content
+        }}
+      >
+        {/* Play Button on the Left */}
+        <button
+          onClick={togglePlay}
+          style={{
+            marginRight: '15px', // Add spacing between button and other elements
+            padding: '10px 20px',
+            backgroundColor: isPlaying ? '#FF0000' : '#007BFF',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)'
+          }}
+        >
+          {isPlaying ? 'Pause' : 'Play'}
+        </button>
+
+        {/* Time Slider and Markers */}
+        <div style={{ flex: 1 }}>
+          {/* Time Markers */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+            {[...Array(24 - new Date().getHours())].map((_, i) => {
+              const hour = i + new Date().getHours()
+              const isSelected = hour === currentHour
+
+              return (
+                <span
+                  key={hour}
+                  style={{
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    padding: '4px 8px',
+                    backgroundColor: isSelected ? '#007BFF' : '#FFF',
+                    color: isSelected ? '#FFF' : '#000',
+                    border: '1px solid #CCC',
+                    borderRadius: '4px',
+                    boxShadow: isSelected ? '0 2px 4px rgba(0, 0, 0, 0.2)' : 'none',
+                    transition: 'background-color 0.3s, color 0.3s'
+                  }}
+                  onClick={() => handleTimeChange(hour)}
+                >
+                  {hour}:00
+                </span>
+              )
+            })}
+          </div>
+
+          {/* Time Slider */}
+          <input
+            type='range'
+            min={new Date().getHours()}
+            max='23'
+            value={currentHour}
+            onChange={(e) => handleTimeChange(Number(e.target.value))}
+            style={{ width: '100%', margin: '10px 0' }}
+          />
+        </div>
+      </div>
     </>
   )
 }
