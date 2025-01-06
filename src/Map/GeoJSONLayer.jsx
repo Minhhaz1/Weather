@@ -3,13 +3,14 @@ import { GeoJSON, Marker, useMapEvents } from 'react-leaflet'
 import { MapContext } from './MapContainer'
 import L from 'leaflet'
 import WeatherChart from './WeatherChart'
+import iconStorm from './png/icons-thunder.png'
 import WeatherForecast from './WeatherChart2'
 import ClickHandler from './Click'
 import DynamicLegend from './DynamicLegend'
 
 const GeoJSONLayer = ({ data }) => {
   const [selectedFeature, setSelectedFeature] = useState(null)
-  const { weatherData, geoJson, displayOption } = useContext(MapContext)
+  const { weathers, geoJson, displayOption } = useContext(MapContext)
   const [zoomLevel, setZoomLevel] = useState(5)
   const [isRegionView, setisRegionView] = useState(true)
   const [currentHour, setCurrentHour] = useState(new Date().getHours())
@@ -174,15 +175,15 @@ const GeoJSONLayer = ({ data }) => {
     }
     const currentData = hourlyData.find((hour) => hour.hour === currentHour) || {}
     // console.log(currentData)
-    if (displayOption === 'temperature') {
+    if (displayOption === 'temperature' || displayOption === 'storm') {
       // console.log(getTemperatureColor2(currentData.temperature))
       return getTemperatureColor2(currentData.temperature)
     }
-    if (displayOption === 'wind') {
+    if (displayOption === 'wind' || displayOption === 'storm') {
       return getColorWind(currentData.wind) // Màu cam hoặc xanh
     }
 
-    if (displayOption === 'humidity') {
+    if (displayOption === 'humidity' || displayOption === 'storm') {
       return getColorHumidity(currentData.humidity) // Xanh đậm hoặc nhạt
     }
 
@@ -208,26 +209,19 @@ const GeoJSONLayer = ({ data }) => {
     })
   }
   const renderStormMarkers = () => {
-    return weatherData.map((data, index) => {
+    return weathers.map((data, index) => {
       const lon = data.lon
       const lat = data.lat
 
       return (
         <Marker
           key={index}
-          position={[lat, lon]} // Vị trí của chấm đỏ
-          icon={L.divIcon({
-            className: 'custom-storm-marker',
-            html: `<div style="
-              width: 8px;
-              height: 8px;
-              background-color: red;
-              border-radius: 50%;
-              border: 2px solid white;
-              transform: translate(-50%, -50%);
-            "></div>`,
-            iconSize: [10, 10],
-            iconAnchor: [5, 5]
+          position={[lat, lon]} // Vị trí của chấm sét
+          icon={L.icon({
+            iconUrl: iconStorm, // Sử dụng ảnh GIF
+            iconSize: [20, 20], // Kích thước của marker
+            iconAnchor: [16, 16], // Căn giữa marker
+            popupAnchor: [0, -16] // Căn popup khi click vào marker
           })}
         />
       )
@@ -237,7 +231,7 @@ const GeoJSONLayer = ({ data }) => {
   return (
     <>
       <GeoJSON data={geoJson} style={style} onEachFeature={onEachFeature} />
-      {renderStormMarkers()} {/* Render các chấm đỏ từ API */}
+      {displayOption === 'storm' && renderStormMarkers()}
       {!isRegionView && <DynamicLegend displayOption={displayOption} />}
       {isRegionView && (
         <>
@@ -271,12 +265,13 @@ const GeoJSONLayer = ({ data }) => {
           {/* Gọi ClickHandler để hiển thị Marker */}
           <ClickHandler selectedFeature={selectedFeature} />
 
-          {/* Hiển thị thông tin chi tiết bên dưới */}
+          {/* Container cuộn ngang */}
           <div
             style={{
-              backgroundColor: 'white',
+              display: 'flex',
+              overflowX: 'auto', // Kích hoạt cuộn ngang
               height: '200px',
-              overflowY: 'auto',
+              backgroundColor: 'white',
               position: 'fixed',
               bottom: '0',
               left: '0',
@@ -286,6 +281,7 @@ const GeoJSONLayer = ({ data }) => {
               borderRadius: '8px 8px 0 0'
             }}
           >
+            {/* Nút đóng */}
             <button
               onClick={() => setSelectedFeature(null)} // Đặt selectedFeature thành null khi nhấn
               style={{
@@ -304,7 +300,15 @@ const GeoJSONLayer = ({ data }) => {
             >
               ✖
             </button>
-            <div>
+            {/* Phần thông tin thời tiết */}
+            <div
+              style={{
+                flex: '1',
+                padding: '10px',
+                width: '100%', // Chiếm đủ màn hình ban đầu
+                overflowY: 'auto' // Thanh cuộn dọc nếu nội dung dài
+              }}
+            >
               <WeatherForecast selectedFeature={selectedFeature} />
             </div>
           </div>

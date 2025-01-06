@@ -1,94 +1,3 @@
-// import React from 'react'
-// import './index.css'
-
-// const WeatherForecast = ({ weatherData }) => {
-//   return (
-//     <div
-//       className='table-wrapper show notap svelte-d7htey'
-//       style={{
-//         position: 'absolute',
-//         bottom: 0,
-//         left: 0,
-//         width: '100%',
-//         height: '33%',
-//         display: 'flex',
-//         alignItems: 'center',
-//         justifyContent: 'space-around'
-//       }}
-//     >
-//       {/* Hiển thị tiêu đề các cột */}
-//       <div className='legend svelte-734wky' data-date-label=''>
-//         <div
-//           className='legend-hour height-hour d-display-table'
-//           style={{
-//             height: '50px',
-//             width: '100px',
-//             padding: 'auto',
-//             marginTop: '5px'
-//           }}
-//         >
-//           <span className='legend-left'>Giờ</span>
-//           <span data-do='metric,hour' className='legend-right'></span>
-//         </div>
-//         <div className='legend-temp height-temp d-display-table'>
-//           <span className='legend-left'>Nhiệt độ</span>
-//           <span data-do='metric,temp' className='legend-right metric-clickable'>
-//             °C
-//           </span>
-//         </div>
-//       </div>
-
-//       Bảng hiển thị dữ liệu thời tiết
-//       <table id='detail-data-table' style={{ width: '100%' }}>
-//         <tbody>
-//           {/* Hiển thị ngày */}
-//           {weatherData.days.map((day) => (
-//             <>
-//               <tr className='td-days height-days' key={day.date}>
-//                 <td colSpan={day.hours.length} className='sticky-title-wrapper' data-day={day.date}>
-//                   <div className='sticky-title' data-daydiv={day.date}>
-//                     {day.dayLabel}
-//                   </div>
-//                 </td>
-//               </tr>
-
-//               {/* Hiển thị giờ */}
-//               <tr className='td-hour height-hour d-display-table'>
-//                 {day.hours.map((hour, index) => (
-//                   <td key={`${day.date}-hour-${index}`} data-ts={hour.time}>
-//                     {hour.time}
-//                   </td>
-//                 ))}
-//               </tr>
-
-//               {/* Hiển thị icon */}
-//               <tr className='td-icon height-icon d-display-table'>
-//                 {day.hours.map((hour, index) => (
-//                   <td key={`${day.date}-icon-${index}`}>
-//                     <img
-//                       src={`/img/icons7/png_25px/${hour.icon}`}
-//                       srcSet={`/img/icons7/png_25@2x/${hour.icon} 2x`}
-//                       alt={`Icon ${hour.icon}`}
-//                     />
-//                   </td>
-//                 ))}
-//               </tr>
-
-//               {/* Hiển thị nhiệt độ */}
-//               <tr className='td-temp height-temp d-display-table'>
-//                 {day.hours.map((hour, index) => (
-//                   <td key={`${day.date}-temp-${index}`}>{hour.temperature}</td>
-//                 ))}
-//               </tr>
-//             </>
-//           ))}
-//         </tbody>
-//       </table>
-//     </div>
-//   )
-// }
-
-// export default WeatherForecast
 import React from 'react'
 import './index.css'
 
@@ -98,7 +7,10 @@ import rain from './png/rain.gif'
 import storm from './png/storm.gif'
 import clouds from './png/clouds.gif'
 import wind from './png/wind.gif'
-import moon_sun from './png/moon_sun.gif'
+import overcast from './png/overcast.png'
+import partly_cloudy from './png/PartlyCloudy.gif'
+import partlyrain from './png/party rain.gif'
+import fog from './png/fog.gif'
 
 // Dữ liệu mẫu (mock data)
 const lines = [
@@ -119,6 +31,28 @@ const e = {
   }
 }
 
+const e1 = {
+  color: (value) => {
+    if (value > 90) return 'rgb(0, 0, 255)' // Xanh đậm
+    if (value > 80) return 'rgb(51, 102, 255)' // Xanh đậm vừa
+    if (value > 70) return 'rgb(102, 153, 255)' // Xanh vừa
+    if (value > 60) return 'rgb(153, 204, 255)' // Xanh nhạt vừa
+    if (value > 50) return 'rgb(204, 229, 255)' // Xanh nhạt
+    return 'rgb(204, 255, 255)' // Xanh nhạt nhất
+  }
+}
+
+const e2 = {
+  color: (value) => {
+    if (value > 40) return 'rgb(0, 128, 0)' // Xanh lá cây đậm
+    if (value > 25) return 'rgb(34, 139, 34)' // Xanh lá cây đậm vừa
+    if (value > 15) return 'rgb(60, 179, 113)' // Xanh lá cây vừa
+    if (value > 8) return 'rgb(144, 238, 144)' // Xanh lá cây nhạt vừa
+    if (value > 3) return 'rgb(152, 251, 152)' // Xanh lá cây nhạt
+    return 'rgb(240, 255, 240)' // Xanh lá cây nhạt nhất
+  }
+}
+
 // Hàm tính màu dựa trên một nhiệt độ cụ thể
 const createGradientForTemperature = (temperature) => {
   const range = 10 // Khoảng lân cận để tính màu
@@ -134,6 +68,33 @@ const createGradientForTemperature = (temperature) => {
   }
 
   return `linear-gradient(to right, ${colors.join(', ')})`
+}
+const descriptionToIconMap = {
+  Overcast: overcast,
+  'Patchy rain nearby': partlyrain,
+  Fog: fog,
+  'Moderate snow': clouds,
+  'Patchy light rain': partlyrain,
+  'Cloudy ': clouds,
+  'Clear ': sunny,
+  'Thundery outbreaks possible': storm,
+  'Partly Cloudy ': partly_cloudy,
+  'Patchy light snow': clouds,
+  'Patchy heavy snow': clouds,
+  'Moderate or heavy rain with thunder': storm,
+  'Light rain': partlyrain,
+  'Light rain shower': partlyrain,
+  'Patchy light rain with thunder': storm,
+  'Heavy snow': clouds,
+  'Patchy rain possible': partlyrain,
+  'Patchy light drizzle': rain,
+  'Light sleet': rain,
+  Mist: fog,
+  'Light snow': clouds,
+  'Moderate rain': rain,
+  'Patchy moderate snow': clouds,
+  Sunny: sunny,
+  'Moderate rain at times': partlyrain
 }
 
 // Tính toán màu cho từng giá trị cụ thể
@@ -213,102 +174,8 @@ const WeatherForecast = ({ selectedFeature }) => {
         color: 'black'
       }}
     >
-      {/* <div className='legend svelte-734wky' data-date-label=''>
-        <div
-          className='legend-hour height-hour d-display-table'
-          style={{ height: '50px', width: '100px', padding: 'auto', marginTop: '5px' }}
-        >
-          <span className='legend-left'>Giờ</span>
-          <span data-do='metric,hour' className='legend-right'></span>
-        </div>
-        <div className='legend-icon height-icon d-display-table'>
-          <span className='legend-left'></span>
-          <span data-do='metric,icon' className='legend-right'></span>
-        </div>
-        <div className='legend-temp height-temp d-display-table'>
-          <span className='legend-left'>Nhiệt độ</span>
-          <span data-do='metric,temp' className='legend-right metric-clickable'>
-            °C
-          </span>
-        </div>
-        <div className='legend-rain height-rain d-display-table'>
-          <span className='legend-left'>Mưa</span>
-          <span data-do='metric,rain' className='legend-right metric-clickable'>
-            mm
-          </span>
-        </div>
-        <div className='legend-wind height-wind d-display-table'>
-          <span className='legend-left'>Gió</span>
-          <span data-do='metric,wind' className='legend-right metric-clickable'>
-            kt
-          </span>
-        </div>
-      </div> */}
-      {/* <div className='legend svelte-734wky' data-date-label=''>
-        <div
-          className='legend-hour height-hour d-display-table'
-          style={{ height: '50px', width: '100px', padding: 'auto', marginTop: '5px' }}
-        >
-          <span className='legend-left'>Giờ</span>
-          <span data-do='metric,hour' className='legend-right'></span>
-        </div>
-        <div className='legend-icon height-icon d-display-table'>
-          <span className='legend-left'></span>
-          <span data-do='metric,icon' className='legend-right'></span>
-        </div>
-        <div className='legend-temp height-temp d-display-table'>
-          <span className='legend-left'>Nhiệt độ</span>
-          <span data-do='metric,temp' className='legend-right metric-clickable'>
-            °C
-          </span>
-        </div>
-        <div className='legend-rain height-rain d-display-table'>
-          <span className='legend-left'>Độ ẩm </span>
-          <span data-do='metric,rain' className='legend-right metric-clickable'>
-            mm
-          </span>
-        </div>
-        <div className='legend-wind height-wind d-display-table'>
-          <span className='legend-left'>Gió</span>
-          <span data-do='metric,wind' className='legend-right metric-clickable'>
-            kt
-          </span>
-        </div>
-      </div> */}
       <table id='detail-data-table' style={{ width: '100%' }}>
         <tbody>
-          {/* <tr className='td-days height-days'>
-            <td colSpan='5' className='sticky-title-wrapper' data-day='2024-12-05'>
-              <div className='sticky-title' data-daydiv='2024-12-05'>
-                Thứ Năm 5
-              </div>
-            </td>
-            <td colSpan='8' className='sticky-title-wrapper' data-day='2024-12-06'>
-              <div className='sticky-title' data-daydiv='2024-12-06'>
-                Thứ Sáu 6
-              </div>
-            </td>
-            <td colSpan='8' className='sticky-title-wrapper' data-day='2024-12-07'>
-              <div className='sticky-title' data-daydiv='2024-12-07'>
-                Thứ Bảy 7
-              </div>
-            </td>
-            <td colSpan='8' className='sticky-title-wrapper' data-day='2024-12-08'>
-              <div className='sticky-title' data-daydiv='2024-12-08'>
-                Chủ Nhật 8
-              </div>
-            </td>
-            <td colSpan='8' className='sticky-title-wrapper' data-day='2024-12-09'>
-              <div className='sticky-title' data-daydiv='2024-12-09'>
-                Thứ Hai 9
-              </div>
-            </td>
-            <td colSpan='8' className='sticky-title-wrapper' data-day='2024-12-10'>
-              <div className='sticky-title' data-daydiv='2024-12-10'>
-                Thứ Ba 10
-              </div>
-            </td>
-          </tr> */}
           <tr className='td-hour height-hour d-display-table'>
             <td>
               <div className='legend-hour height-hour d-display-table'>
@@ -343,81 +210,25 @@ const WeatherForecast = ({ selectedFeature }) => {
 
             {/* Thêm các ô khác vào đây */}
           </tr>
+
           <tr className='td-icon height-icon d-display-table'>
-            <td>{/* <img src={icon19} alt='Icon 19' /> */}</td>
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>{' '}
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>{' '}
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>{' '}
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>{' '}
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>{' '}
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>{' '}
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>{' '}
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>{' '}
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>{' '}
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>{' '}
-            <td>
-              <img src={rain} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>
-            <td>
-              <img src={sunny} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>
-            <td>
-              <img src={moon_sun} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>
-            <td>
-              <img src={clouds} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>
-            <td>
-              <img src={sunny} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>
-            <td>
-              <img src={storm} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>
-            <td>
-              <img src={icon19} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>
-            <td>
-              <img src={icon19} alt='Icon 19' style={{ width: '60px', height: '60px' }} />
-            </td>
-            {/* Thêm các ảnh khác */}
+            <td></td>
+            {selectedFeature.hourlyData.map((hourData, index) => {
+              const description = hourData.description // Lấy mô tả thời tiết từ dữ liệu
+              const iconSrc = descriptionToIconMap[description] || descriptionToIconMap[sunny] // Sử dụng ảnh từ map hoặc ảnh mặc định
+              console.log('Description:', hourData.description)
+              console.log('iconSrc:', iconSrc)
+              return (
+                <td key={index}>
+                  <img
+                    src={iconSrc}
+                    alt={description}
+                    title={description} // Tooltip hiển thị mô tả thời tiết
+                    style={{ width: '40px', height: '40px' }}
+                  />
+                </td>
+              )
+            })}
           </tr>
           <tr className='td-temp height-temp d-display-table'>
             <td>
@@ -488,6 +299,30 @@ const WeatherForecast = ({ selectedFeature }) => {
           </tr>
         </tbody>
       </table>
+      {/* <div
+        style={{
+          flex: '0 0 200px', // Đặt chiều rộng cố định cho thông tin địa điểm
+          padding: '10px',
+          backgroundColor: '#f9f9f9',
+          borderLeft: '1px solid #ddd', // Đường phân cách
+          overflowY: 'auto' // Cuộn dọc nếu cần
+        }}
+      >
+        <h4 style={{ color: '#333', marginBottom: '10px' }}>Thông tin địa điểm</h4>
+        <p>
+          <strong>Tên:</strong>
+        </p>
+        <p>
+          <strong>Vùng:</strong>
+        </p>
+        <p>
+          <strong>Kinh độ:</strong>
+        </p>
+        <p>
+          <strong>Vĩ độ:</strong>
+        </p>
+        {/* Thêm các thông tin khác nếu cần */}
+      {/* </div> */} */
     </div>
   )
 }

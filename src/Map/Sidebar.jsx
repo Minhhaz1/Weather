@@ -15,7 +15,7 @@ const Sidebar = ({ onOptionChange }) => {
         top: '200px', // Căn chỉnh từ trên xuống
         left: '0', // Nằm sát bên trái
         width: '100px', // Chiều rộng của Sidebar
-        height: '230px', // Chiều cao cố định (đủ để hiển thị 3 nút)
+        height: '280px', // Chiều cao cố định (đủ để hiển thị 3 nút)
         backgroundColor: 'rgba(255, 255, 255, 0)', // Nền trong suốt 70%
         // borderRight: '1px solid #ddd', // Viền bên phải
         zIndex: 1000, // Đảm bảo Sidebar luôn nằm trên cùng
@@ -57,6 +57,17 @@ const Sidebar = ({ onOptionChange }) => {
             onClick={() => handleOptionChange('humidity')}
           >
             <i className='fas fa-tint' style={iconStyle}></i>
+          </button>
+        </li>
+        <li>
+          <button
+            style={{
+              ...circleButtonStyle,
+              backgroundColor: selectedOption === 'storm' ? '#d1e7dd' : '#fff'
+            }}
+            onClick={() => handleOptionChange('storm')}
+          >
+            <i className='fas fa-bolt' style={iconStyle}></i>
           </button>
         </li>
       </ul>

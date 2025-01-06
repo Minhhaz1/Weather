@@ -6,6 +6,7 @@ import JsonData from './csvjson.json'
 import chatboticon from './png/chatbo.jpg'
 // import ClickHandler from './ClickHandler'
 import getWeathers from './weathersApi'
+import getWeathers2 from './weathersApi2'
 
 import { createContext } from 'react'
 // import weatherData from './weatherData'
@@ -49,41 +50,50 @@ export const MapContext = createContext()
 const MapContainer = ({ displayOption }) => {
   const [chatbotVisible, setChatbotVisible] = useState(false)
   const [weathers, setWeathers] = useState([])
+  const [weathers2, setWeathers2] = useState([])
   const [geoJson, setGeoJson] = useState(null)
-  const today = new Date() // Lấy ngày hiện tại
 
-  const day = today.getDate() // Lấy ngày trong tháng (1-31)
-  const month = today.getMonth() + 1 // Lấy tháng (0-11) + 1 để thành (1-12)
-  const year = today.getFullYear()
-  const currentDay = `${year}${month}${day}`
+  const today = new Date()
+  const currentDate = today.toISOString().split('T')[0]
+  // Hàm tạo danh sách 5 ngày tiếp theo
+  const getNextFiveDays = () => {
+    return Array.from({ length: 5 }, (_, i) => {
+      const date = new Date(today)
+      date.setDate(today.getDate() + i)
+      return date.toISOString().split('T')[0] // YYYY-MM-DD
+    })
+  }
+
+  const nextFiveDays = getNextFiveDays()
+  console.log(nextFiveDays)
 
   useEffect(() => {
     const fetchWeatherData = async () => {
       try {
-        const res = await getWeathers('95')
-        const weatherData = res.data || res // Xử lý dữ liệu nhận được
+        const res1 = await getWeathers('95,96') // Giả sử API yêu cầu `weatherCode`
+        const weatherData = res1.data || res1
+
+        // Gọi API thứ hai
+        const res2 = await getWeathers2('2025-01-05') // Giả sử `dateId` là 2024-12-01
+        const weatherData2 = res2.data || res2
+
+        // Kiểm tra xem dữ liệu có hợp lệ không
         if (!weatherData || weatherData.length === 0) {
-          console.warn('No weather data available from API')
-          return
+          console.warn('No weather data available from API 1')
+        }
+        if (!weatherData2 || weatherData2.length === 0) {
+          console.warn('No weather data available from API 2')
         }
 
         setWeathers(weatherData)
-        console.log(weatherData)
+        setWeathers2(weatherData2)
+        // console.log(weatherData)
+        // console.log(weatherData2)
 
-        // Tạo GeoJSON từ dữ liệu nhận được
-        // try {
-        //   // Gọi API lấy dữ liệu thời tiết
-        //   const res = await fetch('https://90be-42-116-147-150.ngrok-free.app/api?weatherCode=95') // Sử dụng URL API của bạn
-        //   const weatherData = await res.json() // Lấy dữ liệu từ API
-
-        //   if (!weatherData || weatherData.length === 0) {
-        //     console.warn('No weather data available from API')
-        //     return
-        //   }
         const geoJson = {
           type: 'FeatureCollection',
           features: Object.values(
-            JsonData.reduce((acc, data) => {
+            weatherData2.reduce((acc, data) => {
               const key = data.LocationID // Nhóm dữ liệu theo `location_id`
               const offset = 0.05
               const formatFullName = (ward, district, province) => {
@@ -161,7 +171,10 @@ const MapContainer = ({ displayOption }) => {
     [8.1790665, 102.14441],
     [30.3929, 109.469]
   ]
-
+  const worldBounds = [
+    [-90, -180], // Tọa độ góc dưới trái (Nam Cực, Tây)
+    [90, 180] // Tọa độ góc trên phải (Bắc Cực, Đông)
+  ]
   console.log(displayOption)
   return (
     <MapContext.Provider
@@ -172,13 +185,9 @@ const MapContainer = ({ displayOption }) => {
         displayOption
       }}
     >
-      {/* <WeatherForecast
-        weatherData={mockWeatherData}
-        style={{ position: 'absolute', zIndex: 1000, bottom: 0, left: 0 }}
-      /> */}
       <LeafletMap
         bounds={vietnamBounds}
-        maxBounds={vietnamBounds}
+        maxBounds={worldBounds}
         maxBoundsViscosity={1.0}
         minZoom={5}
         style={{ height: '100%', width: '100%' }}

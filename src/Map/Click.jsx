@@ -3,6 +3,16 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaf
 import troiIcon from './png/storm.gif'
 import L from 'leaflet'
 import { MapContext } from './MapContainer'
+import icon19 from './png/rain.gif'
+import sunny from './png/sunny.gif'
+import rain from './png/rain.gif'
+import storm from './png/storm.gif'
+import clouds from './png/clouds.gif'
+import wind from './png/wind.gif'
+import overcast from './png/overcast.png'
+import partly_cloudy from './png/PartlyCloudy.gif'
+import partlyrain from './png/party rain.gif'
+import fog from './png/fog.gif'
 const ClickHandler = ({ selectedFeature }) => {
   console.log(selectedFeature, selectedFeature.lon, selectedFeature.lat)
 
@@ -26,6 +36,51 @@ const ClickHandler = ({ selectedFeature }) => {
   //     console.log('Tọa độ : ' + lat + ' : ' + lng)
   //   }
   // })
+  const descriptionToIconMap = {
+    Overcast: overcast,
+    'Patchy rain nearby': partlyrain,
+    Fog: fog,
+    'Moderate snow': clouds,
+    'Patchy light rain': partlyrain,
+    Cloudy: clouds,
+    Clear: sunny,
+    'Thundery outbreaks possible': storm,
+    'Partly Cloudy': partly_cloudy,
+    'Patchy light snow': clouds,
+    'Patchy heavy snow': clouds,
+    'Moderate or heavy rain with thunder': storm,
+    'Light rain': partlyrain,
+    'Light rain shower': partlyrain,
+    'Patchy light rain with thunder': storm,
+    'Heavy snow': clouds,
+    'Patchy rain possible': partlyrain,
+    'Patchy light drizzle': rain,
+    'Light sleet': rain,
+    Mist: fog,
+    'Light snow': clouds,
+    'Moderate rain': rain,
+    'Patchy moderate snow': clouds,
+    Sunny: sunny,
+    'Moderate rain at times': partlyrain
+  }
+
+  const descriptions = [
+    'Rain',
+    'Rain',
+    'Sunny',
+    'Clouds',
+    'Storm',
+    'Partly Cloudy',
+    'Sunny',
+    'Rain',
+    'Clouds',
+    'Rain',
+    'Storm',
+    'Partly Cloudy',
+    'Rain',
+    'Sunny',
+    'Default'
+  ]
 
   const weatherDescriptions = {
     Overcast: 'Trời u ám, nhiều mây.',
@@ -111,7 +166,11 @@ const ClickHandler = ({ selectedFeature }) => {
             }}
           >
             <img
-              src={troiIcon}
+              src={
+                descriptionToIconMap[
+                  selectedFeature.hourlyData.find((hour) => hour.hour === currentHour)?.description
+                ] || descriptionToIconMap['Sunny'] // Sử dụng ảnh từ map hoặc ảnh mặc định nếu không tìm thấy
+              }
               alt='Weather Icon'
               style={{
                 width: '50px',

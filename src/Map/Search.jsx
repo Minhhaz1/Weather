@@ -1,10 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { MapContext } from './MapContainer'
-import troiIcon from '../access/troi.png'
 import { Marker, Popup, useMap } from 'react-leaflet'
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import L from 'leaflet'
-// import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons'
 import IconVitri from '../access/vitri.jpg'
 import ClickHandler from './Click'
 
@@ -27,21 +24,9 @@ const Search = () => {
   const handleSearch = (e) => {
     const value = e.target.value
     setSearchTerm(value)
-    console.log(geoJson)
     if (!value) {
       setFilteredCities([]) // Nếu không nhập từ khóa, xóa kết quả tìm kiếm
     } else {
-      // const seenNames = new Set()
-      // const filtered = geoJsonData.features.filter((feature) => {
-      //   const name = feature?.properties?.name?.toLowerCase()
-      //   if (name && !seenNames.has(name) && name.includes(value.toLowerCase())) {
-      //     seenNames.add(name)
-      //     return true
-      //   }
-      //   return false
-      // })
-
-      // setFilteredCities(filtered)
       const filtered = geoJson.features.filter((feature) =>
         feature.properties.name.toLowerCase().includes(value.toLowerCase())
       )
@@ -54,11 +39,9 @@ const Search = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords
-          map.flyTo([latitude, longitude], 15) // Zoom đến vị trí thành phố
+          map.flyTo([latitude, longitude], 15) // Zoom đến vị trí
           setLocation([latitude, longitude])
           setIsPopupVisible(true)
-          console.log(`Latitude: ${latitude}, Longitude: ${longitude}`)
-          // Thực hiện logic tiếp theo, ví dụ: gọi API dựa trên vị trí hiện tại
         },
         (error) => {
           console.error('Lỗi khi lấy vị trí:', error.message)
@@ -76,11 +59,10 @@ const Search = () => {
     setSearchTerm('') // Xóa từ khóa tìm kiếm
     setFilteredCities([]) // Xóa kết quả tìm kiếm
   }
+
   const currentHour = new Date().getHours() % 24
-  // const currentData = hourlyData.find((hour) => hour.hour === String(currentHour)) || {}
-  // Tìm thông tin từ hourlyData theo giờ hiện tại
   const currentData = selectedCity?.properties?.hourlyData.find((data) => data.hour === currentHour) || null
-  console.log(currentData)
+
   return (
     <div style={{ position: 'relative', zIndex: 1000, width: '300px', margin: '10px', marginLeft: '50px' }}>
       <input
@@ -124,7 +106,9 @@ const Search = () => {
             background: '#fff',
             padding: '10px',
             borderRadius: '5px',
-            boxShadow: '0 2px 6px rgb(253, 140, 1)'
+            boxShadow: '0 2px 6px rgb(253, 140, 1)',
+            maxHeight: '200px', // Giới hạn chiều cao
+            overflowY: 'auto' // Kích hoạt cuộn dọc
           }}
         >
           {filteredCities.map((city, index) => (
