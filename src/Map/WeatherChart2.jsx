@@ -7,6 +7,8 @@ import rain from './png/rain.gif'
 import storm from './png/storm.gif'
 import clouds from './png/clouds.gif'
 import wind from './png/wind.gif'
+import night from './png/night.gif'
+import rainnight from './png/rainnight.png'
 import overcast from './png/overcast.png'
 import partly_cloudy from './png/PartlyCloudy.gif'
 import partlyrain from './png/party rain.gif'
@@ -215,9 +217,16 @@ const WeatherForecast = ({ selectedFeature }) => {
             <td></td>
             {selectedFeature.hourlyData.map((hourData, index) => {
               const description = hourData.description // Lấy mô tả thời tiết từ dữ liệu
-              const iconSrc = descriptionToIconMap[description] || descriptionToIconMap[sunny] // Sử dụng ảnh từ map hoặc ảnh mặc định
-              console.log('Description:', hourData.description)
-              console.log('iconSrc:', iconSrc)
+              let iconSrc
+              if (hourData.hour >= 18 || hourData.hour <= 5) {
+                if (description.toLowerCase().includes('rain')) {
+                  iconSrc = rainnight // Nếu >=6 và description chứa "rain"
+                } else {
+                  iconSrc = night // Nếu chỉ >=6
+                }
+              } else {
+                iconSrc = descriptionToIconMap[description] || descriptionToIconMap['sunny'] // Nếu không thỏa mãn điều kiện trên
+              } // Sử dụng ảnh từ map hoặc ảnh mặc định
               return (
                 <td key={index}>
                   <img

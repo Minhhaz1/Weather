@@ -10,11 +10,13 @@ import DynamicLegend from './DynamicLegend'
 
 const GeoJSONLayer = ({ data }) => {
   const [selectedFeature, setSelectedFeature] = useState(null)
-  const { weathers, geoJson, displayOption } = useContext(MapContext)
+  const { weathers, geoJson, selectedDate, displayOption } = useContext(MapContext)
   const [zoomLevel, setZoomLevel] = useState(5)
   const [isRegionView, setisRegionView] = useState(true)
   const [currentHour, setCurrentHour] = useState(new Date().getHours())
   const [isPlaying, setIsPlaying] = useState(false)
+  console.log('geoJson layer', geoJson)
+  console.log('selectedDater', selectedDate)
   const map = useMapEvents({
     zoomend: () => {
       const currentZoom = map.getZoom() // Lấy giá trị zoom hiện tại
@@ -39,14 +41,37 @@ const GeoJSONLayer = ({ data }) => {
   const togglePlay = () => {
     setIsPlaying((prev) => !prev)
   }
+  // useEffect(() => {
+  //   setSelectedFeature(null)
+  // }, [selectedDate])
+  useEffect(() => {
+    if (geoJson && geoJson.features && geoJson.features.length > 0) {
+      let matchingFeature
+
+      // Nếu đã có selectedFeature, tìm feature dựa trên location_id
+      if (selectedFeature && selectedFeature.location_id) {
+        matchingFeature = geoJson.features.find(
+          (feature) =>
+            feature.properties.location_id === selectedFeature.location_id && feature.properties.date === selectedDate
+        )
+      }
+
+      // Nếu không tìm thấy matchingFeature, tìm feature chỉ dựa trên date
+      if (!matchingFeature) {
+        matchingFeature = geoJson.features.find((feature) => feature.properties.date === selectedDate)
+      }
+
+      setSelectedFeature(matchingFeature ? matchingFeature.properties : null)
+    }
+  }, [selectedDate, geoJson, selectedFeature])
 
   const handleTimeChange = (hour) => {
     setCurrentHour(hour)
     setIsPlaying(false) // Stop playing when manually selecting a time
   }
-  console.log('ZoomLevel: ', zoomLevel)
-  console.log('isRegionView', isRegionView)
-  console.log('Feature properties:', displayOption)
+  // console.log('ZoomLevel: ', zoomLevel)
+  // console.log('isRegionView', isRegionView)
+  // console.log('Feature properties:', displayOption)
   if (!geoJson || !geoJson.features || geoJson.features.length === 0) {
     console.log('GeoJSON is not ready yet')
     return null // Không render gì nếu `geoJson` chưa có dữ liệu
@@ -85,6 +110,7 @@ const GeoJSONLayer = ({ data }) => {
     { name: 'Đồng bằng sông Cửu Long', lat: 10.0, lng: 105.8 },
     { name: 'Đồng bằng sông Hồng', lat: 20.3, lng: 106.2 }
   ]
+
   const getTemperatureColor2 = (temperature) => {
     // Giới hạn nhiệt độ (tùy chỉnh theo thực tế)
     const minTemp = 0 // Nhiệt độ thấp nhất
@@ -230,7 +256,7 @@ const GeoJSONLayer = ({ data }) => {
 
   return (
     <>
-      <GeoJSON data={geoJson} style={style} onEachFeature={onEachFeature} />
+      <GeoJSON key={selectedDate} data={geoJson} style={style} onEachFeature={onEachFeature} />
       {displayOption === 'storm' && renderStormMarkers()}
       {!isRegionView && <DynamicLegend displayOption={displayOption} />}
       {isRegionView && (
@@ -309,7 +335,7 @@ const GeoJSONLayer = ({ data }) => {
                 overflowY: 'auto' // Thanh cuộn dọc nếu nội dung dài
               }}
             >
-              <WeatherForecast selectedFeature={selectedFeature} />
+              <WeatherForecast key={selectedFeature.date} selectedFeature={selectedFeature} />
             </div>
           </div>
         </>

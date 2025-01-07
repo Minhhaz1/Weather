@@ -7,6 +7,8 @@ import icon19 from './png/rain.gif'
 import sunny from './png/sunny.gif'
 import rain from './png/rain.gif'
 import storm from './png/storm.gif'
+import night from './png/night.gif'
+import rainnight from './png/rainnight.png'
 import clouds from './png/clouds.gif'
 import wind from './png/wind.gif'
 import overcast from './png/overcast.png'
@@ -166,11 +168,18 @@ const ClickHandler = ({ selectedFeature }) => {
             }}
           >
             <img
-              src={
-                descriptionToIconMap[
-                  selectedFeature.hourlyData.find((hour) => hour.hour === currentHour)?.description
-                ] || descriptionToIconMap['Sunny'] // Sử dụng ảnh từ map hoặc ảnh mặc định nếu không tìm thấy
-              }
+              src={(() => {
+                const currentHourData = selectedFeature.hourlyData.find((hour) => hour.hour === currentHour)
+                const description = currentHourData?.description || 'Sunny' //
+
+                if (currentHour >= 18 || currentHour <= 5) {
+                  if (description.toLowerCase().includes('rain')) {
+                    return rainnight
+                  }
+                  return night
+                }
+                return descriptionToIconMap[description] || descriptionToIconMap['Sunny']
+              })()}
               alt='Weather Icon'
               style={{
                 width: '50px',
