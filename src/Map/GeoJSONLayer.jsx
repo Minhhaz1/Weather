@@ -46,9 +46,11 @@ const GeoJSONLayer = ({ data }) => {
   // }, [selectedDate])
   useEffect(() => {
     if (geoJson && geoJson.features && geoJson.features.length > 0) {
+      if (selectedFeature === null) {
+        return
+      }
       let matchingFeature
 
-      // Nếu đã có selectedFeature, tìm feature dựa trên location_id
       if (selectedFeature && selectedFeature.location_id) {
         matchingFeature = geoJson.features.find(
           (feature) =>
@@ -63,7 +65,7 @@ const GeoJSONLayer = ({ data }) => {
 
       setSelectedFeature(matchingFeature ? matchingFeature.properties : null)
     }
-  }, [selectedDate, geoJson, selectedFeature])
+  }, [geoJson])
 
   const handleTimeChange = (hour) => {
     setCurrentHour(hour)
@@ -235,9 +237,20 @@ const GeoJSONLayer = ({ data }) => {
     })
   }
   const renderStormMarkers = () => {
+    if (!weathers || weathers.length === 0) {
+      // Nếu weathers là null, undefined, hoặc mảng rỗng, không hiển thị gì
+      return null
+    }
+
     return weathers.map((data, index) => {
       const lon = data.lon
       const lat = data.lat
+
+      // Kiểm tra thêm nếu lon hoặc lat không hợp lệ
+      if (lon === undefined || lat === undefined) {
+        console.warn(`Invalid coordinates for weather data at index ${index}:`, data)
+        return null
+      }
 
       return (
         <Marker

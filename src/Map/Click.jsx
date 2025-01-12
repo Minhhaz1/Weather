@@ -39,7 +39,7 @@ const ClickHandler = ({ selectedFeature }) => {
   //   }
   // })
   const descriptionToIconMap = {
-    Overcast: overcast,
+    'Overcast ': overcast,
     'Patchy rain nearby': partlyrain,
     Fog: fog,
     'Moderate snow': clouds,
@@ -56,7 +56,7 @@ const ClickHandler = ({ selectedFeature }) => {
     'Patchy light rain with thunder': storm,
     'Heavy snow': clouds,
     'Patchy rain possible': partlyrain,
-    'Patchy light drizzle': rain,
+    'Light drizzle': rain,
     'Light sleet': rain,
     Mist: fog,
     'Light snow': clouds,
@@ -170,7 +170,7 @@ const ClickHandler = ({ selectedFeature }) => {
             <img
               src={(() => {
                 const currentHourData = selectedFeature.hourlyData.find((hour) => hour.hour === currentHour)
-                const description = currentHourData?.description || 'Sunny' //
+                const description = currentHourData?.description || 'Sunny'
 
                 if (currentHour >= 18 || currentHour <= 5) {
                   if (description.toLowerCase().includes('rain')) {
@@ -248,7 +248,7 @@ const ClickHandler = ({ selectedFeature }) => {
         </div>
       </Popup>
     </Marker>
-  ) // Trả về null nếu không có tọa độ được chọn
+  )
 }
 
 export default ClickHandler

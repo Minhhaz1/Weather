@@ -72,7 +72,7 @@ const createGradientForTemperature = (temperature) => {
   return `linear-gradient(to right, ${colors.join(', ')})`
 }
 const descriptionToIconMap = {
-  Overcast: overcast,
+  'Overcast ': overcast,
   'Patchy rain nearby': partlyrain,
   Fog: fog,
   'Moderate snow': clouds,
@@ -89,7 +89,7 @@ const descriptionToIconMap = {
   'Patchy light rain with thunder': storm,
   'Heavy snow': clouds,
   'Patchy rain possible': partlyrain,
-  'Patchy light drizzle': rain,
+  'Light drizzle': rain,
   'Light sleet': rain,
   Mist: fog,
   'Light snow': clouds,
@@ -99,7 +99,6 @@ const descriptionToIconMap = {
   'Moderate rain at times': partlyrain
 }
 
-// Tính toán màu cho từng giá trị cụ thể
 const calculateColorForTemperature = (temperature) => {
   for (let i = 0; i < lines.length - 1; i++) {
     const [startValue] = lines[i]

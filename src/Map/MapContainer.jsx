@@ -29,7 +29,7 @@ const MapContainer = ({ displayOption }) => {
     return Array.from({ length: 4 }, (_, i) => {
       const date = new Date(today)
       date.setDate(today.getDate() + i)
-      return date.toISOString().split('T')[0] // YYYY-MM-DD
+      return date.toISOString().split('T')[0]
     })
   }
 
@@ -243,7 +243,7 @@ const MapContainer = ({ displayOption }) => {
           style={{
             position: 'absolute',
             top: '10px',
-            left: '40%',
+            left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 1000,
             backgroundColor: '#FFF',
